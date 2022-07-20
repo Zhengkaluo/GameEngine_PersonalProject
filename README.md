@@ -1,2 +1,3 @@
 # GameEngine_PersonalProject
 Start writing a simple game engine...
+Learning from the famous Hazel Engine 
