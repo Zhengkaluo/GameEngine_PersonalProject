@@ -7,5 +7,5 @@
 		#define KALUO_API _declspec(dllimport)
 	#endif // KZ_BUILD_DLL
 #else
-	#error KALUO Engine only support windows;
+	#error KALUO Engine only supports windows;
 #endif

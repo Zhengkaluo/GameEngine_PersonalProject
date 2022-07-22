@@ -1,1 +1,2 @@
-﻿LINK : fatal error LNK1104: cannot open file 'E:\GameEngine\KaluoEngine\bin\Debug-x64\KaluoEngine\KaluoEngine.lib;'
+﻿  SandBoxApp.cpp
+  SandBox.vcxproj -> E:\GameEngine\KaluoEngine\bin\Debug-x64\SandBox\SandBox.exe

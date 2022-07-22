@@ -55,7 +55,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);KALUO_PLATFORM_WINDOWS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>KALUO_PLATFORM_WINDOWS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);KALUO_PLATFORM_WINDOWS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)KaluoEngine\src;$(SolutionDir)KaluoEngine;</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>$(SolutionDir)KaluoEngine\src;$(SolutionDir)KaluoEngine;</AdditionalUsingDirectories>
@@ -63,7 +63,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalOptions>E:\GameEngine\KaluoEngine\bin\Debug-x64\KaluoEngine\KaluoEngine.lib; %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>"E:\GameEngine\KaluoEngine\bin\Debug-x64\KaluoEngine\KaluoEngine.lib" %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

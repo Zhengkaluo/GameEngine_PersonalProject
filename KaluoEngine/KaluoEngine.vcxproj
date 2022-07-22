@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Core.h" />
+    <ClInclude Include="EntryPoint.h" />
     <ClInclude Include="KaluoEngine.h" />
   </ItemGroup>
   <ItemGroup>
