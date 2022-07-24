@@ -57,7 +57,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>KALUO_PLATFORM_WINDOWS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);KALUO_PLATFORM_WINDOWS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)KaluoEngine\src;$(SolutionDir)KaluoEngine;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)KaluoEngine\src;$(SolutionDir)KaluoEngine;$(SolutionDir)KaluoEngine\vender\spdlog\include;</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>$(SolutionDir)KaluoEngine\src;$(SolutionDir)KaluoEngine;</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
@@ -74,7 +74,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);KALUO_PLATFORM_WINDOWS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$SolutionDir(KaluoEngine)\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$SolutionDir(KaluoEngine)\src$(SolutionDir)KaluoEngine\vender\spdlog\include;</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>$SolutionDir(KaluoEngine)\src</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
