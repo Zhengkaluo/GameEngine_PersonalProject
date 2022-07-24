@@ -21,22 +21,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Core.h">
-      <Filter>src\KaluoEngine</Filter>
+    <ClInclude Include="src\KaluoEngine\Application.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Application.h">
-      <Filter>src\KaluoEngine</Filter>
+    <ClInclude Include="src\KaluoEngine\Core.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KaluoEngine.h">
-      <Filter>src</Filter>
+    <ClInclude Include="src\KaluoEngine.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EntryPoint.h">
-      <Filter>src\KaluoEngine</Filter>
+    <ClInclude Include="src\KaluoEngine\EntryPoint.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Application.cpp">
-      <Filter>src\KaluoEngine</Filter>
+    <ClCompile Include="src\KaluoEngine\Application.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

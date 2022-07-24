@@ -1,10 +1,10 @@
 #pragma once
 //for application 
-#include "Application.h"
+#include "KaluoEngine/Application.h"
 #include <stdio.h>
 
 //---Entry point------
 
-#include "EntryPoint.h"
+#include "KaluoEngine/EntryPoint.h"
 
 //------

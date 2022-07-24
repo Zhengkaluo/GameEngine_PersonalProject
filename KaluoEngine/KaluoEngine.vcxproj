@@ -11,13 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h" />
-    <ClInclude Include="Core.h" />
-    <ClInclude Include="EntryPoint.h" />
-    <ClInclude Include="KaluoEngine.h" />
+    <ClInclude Include="src\KaluoEngine\EntryPoint.h" />
+    <ClInclude Include="src\KaluoEngine\Application.h" />
+    <ClInclude Include="src\KaluoEngine\Core.h" />
+    <ClInclude Include="src\KaluoEngine.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="src\KaluoEngine\Application.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
