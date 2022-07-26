@@ -1,48 +1,46 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="KaluoEngine">
+      <UniqueIdentifier>{77F19EAD-E3A6-17A3-6C9B-117AD84F0EA7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="src">
-      <UniqueIdentifier>{ae2f784a-d510-4d1f-8baa-584a228a3692}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\KaluoEngine">
-      <UniqueIdentifier>{a6c93484-b162-4052-9cd9-c77e5e0fa6fd}</UniqueIdentifier>
+    <Filter Include="KaluoEngine\Events">
+      <UniqueIdentifier>{7B715507-6755-165D-D0B5-10B0BCB800DF}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\KaluoEngine.h" />
     <ClInclude Include="src\KaluoEngine\Application.h">
-      <Filter>Header Files</Filter>
+      <Filter>KaluoEngine</Filter>
     </ClInclude>
     <ClInclude Include="src\KaluoEngine\Core.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\KaluoEngine.h">
-      <Filter>Header Files</Filter>
+      <Filter>KaluoEngine</Filter>
     </ClInclude>
     <ClInclude Include="src\KaluoEngine\EntryPoint.h">
-      <Filter>Header Files</Filter>
+      <Filter>KaluoEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Events\ApplicationEvent.h">
+      <Filter>KaluoEngine\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Events\Event.h">
+      <Filter>KaluoEngine\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Events\KeyEvent.h">
+      <Filter>KaluoEngine\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Events\MouseEvent.h">
+      <Filter>KaluoEngine\Events</Filter>
     </ClInclude>
     <ClInclude Include="src\KaluoEngine\Log.h">
-      <Filter>Header Files</Filter>
+      <Filter>KaluoEngine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\KaluoEngine\Application.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>KaluoEngine</Filter>
     </ClCompile>
     <ClCompile Include="src\KaluoEngine\Log.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>KaluoEngine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
