@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Event.h"
-#include <sstream>
 
 namespace KaluoEngine {
 	class KALUO_API KeyEvent : public Event

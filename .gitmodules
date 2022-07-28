@@ -1,3 +1,6 @@
 [submodule "KaluoEngine/vender/spdlog"]
 	path = KaluoEngine/vender/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "KaluoEngine/vendor/GLFW"]
+	path = KaluoEngine/vendor/GLFW
+	url = https://github.com/TheCherno/GLFW

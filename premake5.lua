@@ -48,6 +48,12 @@ workspace "KaluoEngine"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+--include directories relative to the root folder (for now is for GLFW)
+IncludeDir = {}
+IncludeDir["GLFW"] = "KaluoEngine/vendor/GLFW/include"
+
+include "KaluoEngine/vendor/GLFW"
+
 project "KaluoEngine"
     location "KaluoEngine" --[KaluoEngine is the folder inside root directory] 
     kind "SharedLib" --indicate it is a dynamic library 
@@ -56,6 +62,9 @@ project "KaluoEngine"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}") --for bin
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}") --for bin-int
+
+    pchheader "Kaluopch.h"
+    pchsource "KaluoEngine/src/Kaluopch.cpp"
 
     files
     { --define which files will be included
@@ -66,7 +75,14 @@ project "KaluoEngine"
     includedirs
     {
         "%{prj.name}/src",
-        "%{prj.name}/vendor/spdlog/include"
+        "%{prj.name}/vendor/spdlog/include",
+        "%{IncludeDir.GLFW}"
+    }
+
+    links
+    {
+        "GLFW",
+        "opengl32.lib"
     }
 
     filter "system:windows"
