@@ -8,17 +8,35 @@
 using namespace std;
 
 namespace KaluoEngine {
+
+#define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
+	
 	Application::Application()
 	{
 		//call constructor
 		m_Window = std::unique_ptr<Window>(Window::Create());
+		//set event call back function
+		//event call back go in o windowData--EventCallbackFn
+		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+
 		//m_Window = Window::Create();
 		//print("constructing app");
 	}
+
 	Application::~Application()
 	{
 
 	}
+
+	void Application::OnEvent(Event& e)
+	{
+		EventDispatcher dispatcher(e);
+		//check through event dispatcher
+		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+
+		KALUO_CORE_TRACE("{0}", e);
+	}
+
 
 	void Application::Run()
 	{
@@ -44,4 +62,14 @@ namespace KaluoEngine {
 			m_Window->OnUpdate();
 		}
 	}
+
+
+	bool Application::OnWindowClose(WindowCloseEvent& e)
+	{
+		m_Running = false;
+		return true;
+	}
+
+	
+
 }
