@@ -6,6 +6,7 @@
 
 //---Entry point------
 
+#include "KaluoEngine/Layer.h"
 #include "KaluoEngine/EntryPoint.h"
 
 //------

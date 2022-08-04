@@ -1,8 +1,9 @@
 #pragma once
 #include "Kaluopch.h"
 #include "Core.h"
-#include "Events/Event.h"
+#include "KaluoEngine/Events/Event.h"
 #include "KaluoEngine/Events/ApplicationEvent.h"
+#include "KaluoEngine/LayerStack.h"
 #include "Window.h"
 
 namespace KaluoEngine{
@@ -16,6 +17,9 @@ namespace KaluoEngine{
 		void Run();
 
 		void OnEvent(Event& e);
+
+		void PushLayer(Layer* layer);
+		void PushOverlay(Layer* layer);
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 
@@ -23,6 +27,8 @@ namespace KaluoEngine{
 		std::unique_ptr<Window> m_Window;
 		//Window* m_Window;
 		bool m_Running = true;
+
+		LayerStack m_LayerStack;
 	};
 
 

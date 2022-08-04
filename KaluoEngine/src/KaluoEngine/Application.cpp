@@ -28,6 +28,15 @@ namespace KaluoEngine {
 
 	}
 
+	void Application::PushLayer(Layer* layer)
+	{
+		m_LayerStack.PushLayer(layer);
+	}
+	void Application::PushOverlay(Layer* layer)
+	{
+		m_LayerStack.PushOverlay(layer);
+	}
+
 	void Application::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
@@ -35,6 +44,14 @@ namespace KaluoEngine {
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 
 		KALUO_CORE_TRACE("{0}", e);
+
+		//update on backward order
+		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); ) 
+		{
+			(*--it)->OnEvent(e);
+			if (e.Handled)
+				break;
+		}
 	}
 
 
@@ -59,6 +76,11 @@ namespace KaluoEngine {
 		{
 			glClearColor(1, 0, 1, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			//update in forward order
+			for (Layer* EachLayer : m_LayerStack)
+				EachLayer->OnUpdate();
+
 			m_Window->OnUpdate();
 		}
 	}

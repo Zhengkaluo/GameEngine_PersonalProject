@@ -37,6 +37,12 @@
     <ClInclude Include="src\KaluoEngine\Events\MouseEvent.h">
       <Filter>KaluoEngine\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Layer.h">
+      <Filter>KaluoEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\LayerStack.h">
+      <Filter>KaluoEngine</Filter>
+    </ClInclude>
     <ClInclude Include="src\KaluoEngine\Log.h">
       <Filter>KaluoEngine</Filter>
     </ClInclude>
@@ -48,6 +54,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\KaluoEngine\Application.cpp">
+      <Filter>KaluoEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KaluoEngine\Layer.cpp">
+      <Filter>KaluoEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KaluoEngine\LayerStack.cpp">
       <Filter>KaluoEngine</Filter>
     </ClCompile>
     <ClCompile Include="src\KaluoEngine\Log.cpp">
