@@ -2,6 +2,8 @@
 #include "Window.h"
 #include <GLFW/glfw3.h>
 
+//struct GLFWwindow;
+
 namespace KaluoEngine {
 
 	class WindowsWindow : public Window

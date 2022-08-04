@@ -48,11 +48,13 @@ workspace "KaluoEngine"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
---include directories relative to the root folder (for now is for GLFW)
+--include directories relative to the root folder (for now is for GLFW)(also Glad)
 IncludeDir = {}
 IncludeDir["GLFW"] = "KaluoEngine/vendor/GLFW/include"
+IncludeDir["Glad"] = "KaluoEngine/vendor/Glad/include"
 
 include "KaluoEngine/vendor/GLFW"
+include "KaluoEngine/vendor/Glad"
 
 project "KaluoEngine"
     location "KaluoEngine" --[KaluoEngine is the folder inside root directory] 
@@ -76,12 +78,14 @@ project "KaluoEngine"
     {
         "%{prj.name}/src",
         "%{prj.name}/vendor/spdlog/include",
-        "%{IncludeDir.GLFW}"
+        "%{IncludeDir.GLFW}",
+        "%{IncludeDir.Glad}"
     }
 
     links
     {
         "GLFW",
+        "Glad",
         "opengl32.lib"
     }
 
@@ -93,7 +97,8 @@ project "KaluoEngine"
         defines
         {
             "KALUO_PLATFORM_WINDOWS",
-            "KALUO_BUILD_DLL"
+            "KALUO_BUILD_DLL",
+            "GLFW_INCLUDE_NONE"
         }
 
         postbuildcommands

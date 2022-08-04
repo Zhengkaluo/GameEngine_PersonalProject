@@ -1,7 +1,8 @@
 #include "Kaluopch.h"
 #include "Application.h"
 #include "Kaluopch.h"
-#include <GLFW/glfw3.h>
+//#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 #include "Events/ApplicationEvent.h"
 #include "Log.h"
 
@@ -19,6 +20,9 @@ namespace KaluoEngine {
 		//event call back go in o windowData--EventCallbackFn
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 
+
+		/*unsigned int id;
+		glGenVertexArrays(1, &id);*/
 		//m_Window = Window::Create();
 		//print("constructing app");
 	}
