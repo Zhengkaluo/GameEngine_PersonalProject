@@ -10,3 +10,7 @@ binding the event call back in the setup of window at the application constructi
 
 EventHandle Order (credit: https://zhuanlan.zhihu.com/p/549038718):  
 ![image](https://github.com/Zhengkaluo/GameEngine_PersonalProject/blob/main/IMG/EventHandleOrder.jpg)
+
+ImGui layer inhieritated from layer class.  
+construction by Onattach function, which calles from push layer function  
+Update function: get singleton app -> size update->delta time update -> newframe of imgui -> render()
