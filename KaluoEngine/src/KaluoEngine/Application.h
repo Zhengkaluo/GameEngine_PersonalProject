@@ -20,6 +20,11 @@ namespace KaluoEngine{
 
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
+
+		inline static Application& Get(){ return *s_Instance; }
+
+		inline Window& GetWindow() { return *m_Window; }
+
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 
@@ -29,6 +34,10 @@ namespace KaluoEngine{
 		bool m_Running = true;
 
 		LayerStack m_LayerStack;
+
+	private:
+		//singleton application
+		static Application* s_Instance;
 	};
 
 

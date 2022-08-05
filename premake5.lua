@@ -52,9 +52,11 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["GLFW"] = "KaluoEngine/vendor/GLFW/include"
 IncludeDir["Glad"] = "KaluoEngine/vendor/Glad/include"
+IncludeDir["ImGui"] = "KaluoEngine/vendor/imgui"
 
 include "KaluoEngine/vendor/GLFW"
 include "KaluoEngine/vendor/Glad"
+include "KaluoEngine/vendor/imgui"
 
 project "KaluoEngine"
     location "KaluoEngine" --[KaluoEngine is the folder inside root directory] 
@@ -79,13 +81,15 @@ project "KaluoEngine"
         "%{prj.name}/src",
         "%{prj.name}/vendor/spdlog/include",
         "%{IncludeDir.GLFW}",
-        "%{IncludeDir.Glad}"
+        "%{IncludeDir.Glad}",
+        "%{IncludeDir.ImGui}"
     }
 
     links
     {
         "GLFW",
         "Glad",
+        "ImGui",
         "opengl32.lib"
     }
 

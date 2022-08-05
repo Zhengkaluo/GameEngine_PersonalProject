@@ -30,6 +30,7 @@ public:
 	{
 		//std::("constructing sandbox...");
 		PushLayer(new ExampleLayer());
+		PushOverlay(new KaluoEngine::ImGuiLayer());
 	}
 
 	~Sandbox()

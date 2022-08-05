@@ -4,3 +4,6 @@
 [submodule "KaluoEngine/vendor/GLFW"]
 	path = KaluoEngine/vendor/GLFW
 	url = https://github.com/TheCherno/GLFW
+[submodule "KaluoEngine/vendor/imgui"]
+	path = KaluoEngine/vendor/imgui
+	url = https://github.com/TheCherno/imgui

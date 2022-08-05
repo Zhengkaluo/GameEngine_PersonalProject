@@ -7,8 +7,14 @@
     <Filter Include="KaluoEngine\Events">
       <UniqueIdentifier>{7B715507-6755-165D-D0B5-10B0BCB800DF}</UniqueIdentifier>
     </Filter>
+    <Filter Include="KaluoEngine\ImGui">
+      <UniqueIdentifier>{E163AABA-4D7A-A850-96F1-3372024779D8}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Platform">
       <UniqueIdentifier>{2AC788B4-1694-E3BF-3FAD-D1672BD9184E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\OpenGL">
+      <UniqueIdentifier>{1E7D2C1D-8A08-9AE1-9319-1DD6FF23F6E1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Platform\Windows">
       <UniqueIdentifier>{64FBD71A-50F4-F66C-7926-DCF1657ED678}</UniqueIdentifier>
@@ -37,6 +43,9 @@
     <ClInclude Include="src\KaluoEngine\Events\MouseEvent.h">
       <Filter>KaluoEngine\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\KaluoEngine\ImGui\ImGuiLayer.h">
+      <Filter>KaluoEngine\ImGui</Filter>
+    </ClInclude>
     <ClInclude Include="src\KaluoEngine\Layer.h">
       <Filter>KaluoEngine</Filter>
     </ClInclude>
@@ -47,6 +56,9 @@
       <Filter>KaluoEngine</Filter>
     </ClInclude>
     <ClInclude Include="src\Kaluopch.h" />
+    <ClInclude Include="src\Platform\OpenGL\ImGuiOpenGLRenderer.h">
+      <Filter>Platform\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
       <Filter>Platform\Windows</Filter>
     </ClInclude>
@@ -55,6 +67,9 @@
   <ItemGroup>
     <ClCompile Include="src\KaluoEngine\Application.cpp">
       <Filter>KaluoEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KaluoEngine\ImGui\ImGuiLayer.cpp">
+      <Filter>KaluoEngine\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\KaluoEngine\Layer.cpp">
       <Filter>KaluoEngine</Filter>
@@ -66,6 +81,9 @@
       <Filter>KaluoEngine</Filter>
     </ClCompile>
     <ClCompile Include="src\Kaluopch.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\ImGuiOpenGLRenderer.cpp">
+      <Filter>Platform\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
       <Filter>Platform\Windows</Filter>
     </ClCompile>
