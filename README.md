@@ -14,5 +14,4 @@ EventHandle Order (credit: https://zhuanlan.zhihu.com/p/549038718):
 ImGui layer inhieritated from layer class.  
 construction by Onattach function, which calles from push layer function  
 Update function: get singleton app -> size update->delta time update -> newframe of imgui -> render()　
-
-Ｔｈｅ　ｏｎｅｖｅｎｔ　ｆｕｎｃｔｉｏｎ：　through imgui layer on event function,　construct one dispatcher and bind all events function into the dispatcher,　it check the event type and　fall them into corresponding type function
+The OnEvent Function: through imgui layer on event function,　construct one dispatcher and bind all events function into the dispatcher,　it check the event type and　fall them into corresponding type function
