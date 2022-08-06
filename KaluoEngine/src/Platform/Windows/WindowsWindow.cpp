@@ -108,6 +108,14 @@ namespace KaluoEngine {
 				}
 			}
 		});
+
+		//typedef void (* GLFWcharfun)(GLFWwindow* window, unsigned int codepoint);
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
+		{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				KeyTypedEvent event(keycode);
+				data.EventCallback(event);
+		});
 		//typedef void (* GLFWmousebuttonfun)(GLFWwindow* window, int button, int action, int mods);
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
 		{

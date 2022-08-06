@@ -12,7 +12,7 @@ namespace KaluoEngine {
 		None = 0,
 		WindowClose, WindowResize, WIndowFocus, WindowFocus, WindowMoved,
 		AppTick, AppUpdate, AppRender,
-		KeyPressed, KeyReleased,
+		KeyTyped ,KeyPressed, KeyReleased,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 	};
 

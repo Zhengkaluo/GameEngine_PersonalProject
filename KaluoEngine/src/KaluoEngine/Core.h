@@ -21,3 +21,9 @@
 
 
 #define BIT(x) (1 << x)
+
+//The std::placeholders namespace contains the placeholder objects [_1, ..., _N] 
+//where N is an implementation defined maximum number. 
+//fn example Applilcation::onxxxevent
+#define KALUO_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+//#define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)

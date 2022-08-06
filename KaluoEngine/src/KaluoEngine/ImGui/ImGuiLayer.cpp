@@ -3,8 +3,11 @@
 
 #include "imgui.h"
 #include "Platform/OpenGL/ImGuiOpenGLRenderer.h"
-#include "GLFW/glfw3.h"
 #include "KaluoEngine/Application.h"
+
+//temp
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 namespace KaluoEngine {
 
@@ -82,6 +85,107 @@ namespace KaluoEngine {
 
 	void ImGuiLayer::OnEvent(Event& event) 
 	{
+		KALUO_CORE_INFO("ImGui layer on event call");
+		//dispatch all event using event dispatcher
+		//check the event type and fall them into corresponding type function
+		EventDispatcher dispatcher(event);
+		dispatcher.Dispatch<MouseButtonPressedEvent>(KALUO_BIND_EVENT_FN(ImGuiLayer::OnMouseButtonPressedEvent));
+		dispatcher.Dispatch<MouseButtonReleasedEvent>(KALUO_BIND_EVENT_FN(ImGuiLayer::OnMouseButtonReleasedEvent));
+		dispatcher.Dispatch<MouseMovedEvent>(KALUO_BIND_EVENT_FN(ImGuiLayer::OnMouseMovedEvent));
+		dispatcher.Dispatch<MouseScrolledEvent>(KALUO_BIND_EVENT_FN(ImGuiLayer::OnMouseScrolledEvent));
+		dispatcher.Dispatch<KeyTypedEvent>(KALUO_BIND_EVENT_FN(ImGuiLayer::OnKeyTypedEvent));
+		dispatcher.Dispatch<WindowResizeEvent>(KALUO_BIND_EVENT_FN(ImGuiLayer::OnWindowResizedEvent));
+		dispatcher.Dispatch<KeyPressedEvent>(KALUO_BIND_EVENT_FN(ImGuiLayer::OnKeyPressedEvent));
+		dispatcher.Dispatch<KeyReleasedEvent>(KALUO_BIND_EVENT_FN(ImGuiLayer::OnKeyReleasedEvent));
 
 	}
+
+	bool ImGuiLayer::OnMouseButtonPressedEvent(MouseButtonPressedEvent& event)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		// Mouse buttons: 0=left, 1=right, 2=middle + extras 
+		//(ImGuiMouseButton_COUNT == 5).
+		io.MouseDown[event.GetMouseButton()] = true;
+
+		//return false its because we want other layer to handle this
+		return false;
+	}
+
+	
+
+	bool ImGuiLayer::OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& event)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.MouseDown[event.GetMouseButton()] = false;
+		//io.MouseReleased[event.GetMouseButton()] = true;
+
+		//return false its because we want other layer to handle this
+		return false;
+	}
+
+	bool ImGuiLayer::OnMouseMovedEvent(MouseMovedEvent& event)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.MousePos = ImVec2(event.GetX(), event.GetY());
+
+		return false;
+	}
+
+	bool ImGuiLayer::OnMouseScrolledEvent(MouseScrolledEvent& event)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		//Mouse wheel Vertical
+		io.MouseWheel += event.GetYOffset();
+		//Mouse wheel Horizontal
+		io.MouseWheelH += event.GetXOffset();
+
+		return false;
+	}
+
+	bool ImGuiLayer::OnKeyTypedEvent(KeyTypedEvent& event)
+	{
+		//for typing into text box  
+		ImGuiIO& io = ImGui::GetIO();
+		//ImGuiIO& io = ImGui::GetIO();
+		int KeyCode = event.GetKeyCode();
+		if (KeyCode > 0 && KeyCode < 0x10000)
+		{
+			io.AddInputCharacter((unsigned short)KeyCode);
+
+		}
+		return false;
+	}
+
+	bool ImGuiLayer::OnWindowResizedEvent(WindowResizeEvent& event)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize = ImVec2(event.GetWidth(), event.GetHeight());
+		io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+		glViewport(0, 0, event.GetWidth(), event.GetHeight());
+
+		return false;
+	}
+
+	bool ImGuiLayer::OnKeyPressedEvent(KeyPressedEvent& event)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.KeysDown[event.GetKeyCode()] = true;
+
+		//check special key
+		io.KeyCtrl = io.KeysDown[GLFW_KEY_RIGHT_CONTROL] || io.KeysDown[GLFW_KEY_LEFT_CONTROL];
+		io.KeyShift = io.KeysDown[GLFW_KEY_RIGHT_SHIFT] || io.KeysDown[GLFW_KEY_LEFT_SHIFT];
+		io.KeyAlt = io.KeysDown[GLFW_KEY_RIGHT_ALT] || io.KeysDown[GLFW_KEY_LEFT_ALT];
+		io.KeySuper = io.KeysDown[GLFW_KEY_RIGHT_SUPER] || io.KeysDown[GLFW_KEY_LEFT_SUPER];
+
+		return false;
+	}
+
+	bool ImGuiLayer::OnKeyReleasedEvent(KeyReleasedEvent& event)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.KeysDown[event.GetKeyCode()] = false;
+
+		return false;
+	}
+
 }
