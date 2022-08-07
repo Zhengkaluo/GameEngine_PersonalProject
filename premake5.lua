@@ -54,9 +54,11 @@ IncludeDir["GLFW"] = "KaluoEngine/vendor/GLFW/include"
 IncludeDir["Glad"] = "KaluoEngine/vendor/Glad/include"
 IncludeDir["ImGui"] = "KaluoEngine/vendor/imgui"
 
-include "KaluoEngine/vendor/GLFW"
-include "KaluoEngine/vendor/Glad"
-include "KaluoEngine/vendor/imgui"
+group "Dependencies"
+    include "KaluoEngine/vendor/GLFW"
+    include "KaluoEngine/vendor/Glad"
+    include "KaluoEngine/vendor/imgui"
+group ""
 
 project "KaluoEngine"
     location "KaluoEngine" --[KaluoEngine is the folder inside root directory] 
@@ -112,7 +114,7 @@ project "KaluoEngine"
             postbuildcommands { "copy dependencies/*.lib bin" }
             postbuildmessage "Copying dependencies..."
         --]]
-            ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/SandBox")
+            ("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/SandBox/\"")
         }
 
     filter "configurations:Debug"

@@ -11,14 +11,14 @@
 #endif
 
 
-//#ifdef KALUO_DEBUG
-//	#define KALUO_ENABLE_ASSERTS
-//#endif
+#ifdef KALUO_DEBUG
+	#define KALUO_ENABLE_ASSERTS
+#endif
 
 #ifdef KALUO_ENABLE_ASSERTS
 	//checks for certain conditions
 	#define KALUO_ASSERT(x, ...) { if(!(x)) { KALUO_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-	#define KALUO_CORE_ASSERT(x, ...) {if(!(x)) { KALUO_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); }
+	#define KALUO_CORE_ASSERT(x, ...) { if(!(x)) { KALUO_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
 #else
 	#define KALUO_ASSERT(x, ...)
 	#define KALUO_CORE_ASSERT(x, ...)
