@@ -62,7 +62,7 @@ project "KaluoEngine"
     location "KaluoEngine" --[KaluoEngine is the folder inside root directory] 
     kind "SharedLib" --indicate it is a dynamic library 
     language "C++"
-
+    staticruntime "off"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}") --for bin
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}") --for bin-int
@@ -95,7 +95,7 @@ project "KaluoEngine"
 
     filter "system:windows"
         cppdialect "C++17"
-        staticruntime "On" --linking of library
+        --staticruntime "On" --linking of library
         systemversion "latest"
 
         defines
@@ -117,15 +117,18 @@ project "KaluoEngine"
 
     filter "configurations:Debug"
         defines "KALUO_DEBUG"
-        buildoptions "/MDd"
+        runtime "Debug"
+        --buildoptions "/MDd"
         symbols "On"
     filter "configurations:Release"
         defines "KALUO_RELEASE"
-        buildoptions "/MD"
+        runtime "Release"
+        --buildoptions "/MD"
         optimize "On"
      filter "configurations:Dist"
         defines "KALUO_DIST"
-        buildoptions "/MD"
+        --buildoptions "/MD"
+        runtime "Release"
         optimize "On"
      
 
@@ -133,6 +136,7 @@ project "SandBox"
     location "SandBox"
     kind "ConsoleApp"
     language "C++"
+    staticruntime "off"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}") --for bin
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}") --for bin-int
@@ -156,7 +160,7 @@ project "SandBox"
 
     filter "system:windows"
         cppdialect "C++17"
-        staticruntime "On" --linking of library
+        --staticruntime "On" --linking of library
         systemversion "latest"
 
         defines
@@ -166,14 +170,17 @@ project "SandBox"
 
     filter "configurations:Debug"
         defines "KALUO_DEBUG"
-        buildoptions "/MDd"
+        runtime "Debug"
+        --buildoptions "/MDd"
         symbols "On"
     filter "configurations:Release"
         defines "KALUO_RELEASE"
-        buildoptions "/MD"
+        --buildoptions "/MD"
+        runtime "Release"
         optimize "On"
      filter "configurations:Dist"
         defines "KALUO_DIST"
-        buildoptions "/MD"
+        --buildoptions "/MD"
+        runtime "Release"
         optimize "On"
      

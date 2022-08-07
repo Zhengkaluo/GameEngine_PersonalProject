@@ -4,7 +4,7 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 
 namespace KaluoEngine {
-
+	//the reason it is a shared ptr is because stdout_color_mt return a shared ptr
 	std::shared_ptr<spdlog::logger> Log::s_CoreLogger;
 	std::shared_ptr<spdlog::logger> Log::s_ClientLogger;
 

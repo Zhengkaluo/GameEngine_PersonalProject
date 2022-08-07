@@ -10,6 +10,11 @@
 	#error KALUO Engine only supports windows;
 #endif
 
+
+//#ifdef KALUO_DEBUG
+//	#define KALUO_ENABLE_ASSERTS
+//#endif
+
 #ifdef KALUO_ENABLE_ASSERTS
 	//checks for certain conditions
 	#define KALUO_ASSERT(x, ...) { if(!(x)) { KALUO_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
