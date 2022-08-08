@@ -158,11 +158,13 @@
     <ClInclude Include="src\KaluoEngine\Events\KeyEvent.h" />
     <ClInclude Include="src\KaluoEngine\Events\MouseEvent.h" />
     <ClInclude Include="src\KaluoEngine\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\KaluoEngine\Input.h" />
     <ClInclude Include="src\KaluoEngine\Layer.h" />
     <ClInclude Include="src\KaluoEngine\LayerStack.h" />
     <ClInclude Include="src\KaluoEngine\Log.h" />
     <ClInclude Include="src\Kaluopch.h" />
     <ClInclude Include="src\Platform\OpenGL\ImGuiOpenGLRenderer.h" />
+    <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
@@ -176,6 +178,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\ImGuiOpenGLRenderer.cpp" />
+    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
   </ItemGroup>
   <ItemGroup>

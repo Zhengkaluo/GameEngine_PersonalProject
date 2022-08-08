@@ -5,7 +5,7 @@
 #include <glad/glad.h>
 #include "Events/ApplicationEvent.h"
 #include "Log.h"
-
+#include "Input.h"
 using namespace std;
 
 namespace KaluoEngine {
@@ -91,6 +91,14 @@ namespace KaluoEngine {
 			//update in forward order
 			for (Layer* EachLayer : m_LayerStack)
 				EachLayer->OnUpdate();
+
+			//test if input instace is working
+			//auto [x, y] = Input::GetMousePosition();
+			//KALUO_CORE_TRACE("mouse pos: {0}, {1}", x, y);
+
+			////#define GLFW_KEY_A                  65
+			//auto IsAPressed = Input::IsKeyPressed(65);
+			//KALUO_CORE_TRACE("Key 9 is Pressed {0}", IsAPressed);
 
 			m_Window->OnUpdate();
 		}

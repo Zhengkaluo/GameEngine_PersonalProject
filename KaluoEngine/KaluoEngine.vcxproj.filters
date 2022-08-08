@@ -46,6 +46,9 @@
     <ClInclude Include="src\KaluoEngine\ImGui\ImGuiLayer.h">
       <Filter>KaluoEngine\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Input.h">
+      <Filter>KaluoEngine</Filter>
+    </ClInclude>
     <ClInclude Include="src\KaluoEngine\Layer.h">
       <Filter>KaluoEngine</Filter>
     </ClInclude>
@@ -58,6 +61,9 @@
     <ClInclude Include="src\Kaluopch.h" />
     <ClInclude Include="src\Platform\OpenGL\ImGuiOpenGLRenderer.h">
       <Filter>Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Windows\WindowsInput.h">
+      <Filter>Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
       <Filter>Platform\Windows</Filter>
@@ -83,6 +89,9 @@
     <ClCompile Include="src\Kaluopch.cpp" />
     <ClCompile Include="src\Platform\OpenGL\ImGuiOpenGLRenderer.cpp">
       <Filter>Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
+      <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
       <Filter>Platform\Windows</Filter>
