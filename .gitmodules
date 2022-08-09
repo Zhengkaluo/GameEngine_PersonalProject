@@ -7,3 +7,6 @@
 [submodule "KaluoEngine/vendor/imgui"]
 	path = KaluoEngine/vendor/imgui
 	url = https://github.com/TheCherno/imgui
+[submodule "KaluoEngine/vendor/glm"]
+	path = KaluoEngine/vendor/glm
+	url = https://github.com/g-truc/glm

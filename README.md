@@ -36,7 +36,7 @@ void OnUpdate() override
 		}
 	}
 ```
-the one above is using input polling
+the one above is using input polling  
 the one 👇 is using input event
 ```
 	void OnEvent(KaluoEngine::Event& event) override
@@ -56,3 +56,5 @@ the one 👇 is using input event
 ```
 and the it is independent from glfw key code and the terminal shows this:  
 ![image](https://github.com/Zhengkaluo/GameEngine_PersonalProject/blob/main/IMG/Poll-Event.png)
+
+OpenGL math GML does not need premake file because it is a header, just include their hpp and inl files

@@ -53,6 +53,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "KaluoEngine/vendor/GLFW/include"
 IncludeDir["Glad"] = "KaluoEngine/vendor/Glad/include"
 IncludeDir["ImGui"] = "KaluoEngine/vendor/imgui"
+IncludeDir["glm"] = "KaluoEngine/vendor/glm"
 
 group "Dependencies"
     include "KaluoEngine/vendor/GLFW"
@@ -75,7 +76,9 @@ project "KaluoEngine"
     files
     { --define which files will be included
         "%{prj.name}/src/**.h",
-        "%{prj.name}/src/**.cpp"
+        "%{prj.name}/src/**.cpp",
+        "%{prj.name}/vendor/glm/glm/**.hpp",
+        "%{prj.name}/vendor/glm/glm/**.inl",
     }
 
     includedirs
@@ -84,7 +87,8 @@ project "KaluoEngine"
         "%{prj.name}/vendor/spdlog/include",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
-        "%{IncludeDir.ImGui}"
+        "%{IncludeDir.ImGui}",
+        "%{IncludeDir.glm}"
     }
 
     links
@@ -152,7 +156,8 @@ project "SandBox"
     includedirs
     {
         "KaluoEngine/vendor/spdlog/include",
-        "KaluoEngine/src"
+        "KaluoEngine/src",
+        "KaluoEngine/vendor/glm"
     }
 
     links

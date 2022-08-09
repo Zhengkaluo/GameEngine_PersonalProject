@@ -3,13 +3,15 @@
 #include <KaluoEngine.h>
 #include <stdio.h>
 
+
 class ExampleLayer : public KaluoEngine::Layer
 {
 public:
 	ExampleLayer()
 		: Layer("Example Layer")
 	{
-
+		//testing glm if its working
+		//auto cam = camera(5.0f, { 0.5f, 0.5f });
 	}
 
 	void OnUpdate() override
