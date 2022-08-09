@@ -85,7 +85,7 @@ namespace KaluoEngine {
 
 	void ImGuiLayer::OnEvent(Event& event) 
 	{
-		KALUO_CORE_INFO("ImGui layer on event call");
+		//KALUO_CORE_INFO("ImGui layer on event call");
 		//dispatch all event using event dispatcher
 		//check the event type and fall them into corresponding type function
 		EventDispatcher dispatcher(event);

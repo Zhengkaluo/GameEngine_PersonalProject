@@ -69,6 +69,8 @@
       <Filter>Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\Window.h" />
+    <ClInclude Include="src\KaluoEngine\KeyCodes.h" />
+    <ClInclude Include="src\KaluoEngine\MouseButtonCodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\KaluoEngine\Application.cpp">

@@ -159,9 +159,11 @@
     <ClInclude Include="src\KaluoEngine\Events\MouseEvent.h" />
     <ClInclude Include="src\KaluoEngine\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\KaluoEngine\Input.h" />
+    <ClInclude Include="src\KaluoEngine\KeyCodes.h" />
     <ClInclude Include="src\KaluoEngine\Layer.h" />
     <ClInclude Include="src\KaluoEngine\LayerStack.h" />
     <ClInclude Include="src\KaluoEngine\Log.h" />
+    <ClInclude Include="src\KaluoEngine\MouseButtonCodes.h" />
     <ClInclude Include="src\Kaluopch.h" />
     <ClInclude Include="src\Platform\OpenGL\ImGuiOpenGLRenderer.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />

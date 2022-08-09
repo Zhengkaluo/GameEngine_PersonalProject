@@ -54,7 +54,7 @@ namespace KaluoEngine {
 		//check through event dispatcher
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 
-		KALUO_CORE_TRACE("{0}", e);
+		//KALUO_CORE_TRACE("{0}", e);
 
 		//update on backward order
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); ) 
@@ -95,8 +95,7 @@ namespace KaluoEngine {
 			//test if input instace is working
 			//auto [x, y] = Input::GetMousePosition();
 			//KALUO_CORE_TRACE("mouse pos: {0}, {1}", x, y);
-
-			////#define GLFW_KEY_A                  65
+			////#define GLFW_KEY_A   ---   65
 			//auto IsAPressed = Input::IsKeyPressed(65);
 			//KALUO_CORE_TRACE("Key 9 is Pressed {0}", IsAPressed);
 

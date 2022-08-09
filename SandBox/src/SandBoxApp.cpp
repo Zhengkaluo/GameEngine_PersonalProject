@@ -14,12 +14,27 @@ public:
 
 	void OnUpdate() override
 	{
-		KALUO_INFO("Example Layer Update");
+		//KALUO_INFO("Example Layer Update");
+
+		if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_TAB)) 
+		{
+			KALUO_TRACE("tab key is pressed! (poll)");
+		}
 	}
 
 	void OnEvent(KaluoEngine::Event& event) override
 	{
-		KALUO_TRACE("{0} event update", event);
+		//KALUO_TRACE("{0} event update", event);
+		if (event.GetEventType() == KaluoEngine::EventType::KeyPressed)
+		{
+			KaluoEngine::KeyPressedEvent& e = (KaluoEngine::KeyPressedEvent&)event;
+			//KALUO_TRACE("key code {0}", (char)e.GetKeyCode());
+			if (e.GetKeyCode() == KALUO_KEY_TAB)
+			{
+				KALUO_TRACE("Tab key is pressed (event)");
+			}
+
+		}
 	}
 };
 
