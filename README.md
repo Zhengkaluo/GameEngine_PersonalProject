@@ -29,14 +29,13 @@ with that it is possbile to be independent from glfw3.h (the true key code we ar
 
 ```c++
 void OnUpdate() override
+{
+	//KALUO_INFO("Example Layer Update");
+	if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_TAB)) 
 	{
-		//KALUO_INFO("Example Layer Update");
-
-		if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_TAB)) 
-		{
-			KALUO_TRACE("tab key is pressed! (poll)");
-		}
+		KALUO_TRACE("tab key is pressed! (poll)");
 	}
+}
 ```
 
 the one above is using input polling  
@@ -44,19 +43,18 @@ the one 👇 is using input event
 
 ```c++
 void OnEvent(KaluoEngine::Event& event) override
+{
+	//KALUO_TRACE("{0} event update", event);
+	if (event.GetEventType() ==KaluoEngine::EventType::KeyPressed)
 	{
-		//KALUO_TRACE("{0} event update", event);
-		if (event.GetEventType() == KaluoEngine::EventType::KeyPressed)
+		KaluoEngine::KeyPressedEvent& e =(KaluoEngine::KeyPressedEvent&)event;
+		//KALUO_TRACE("key code {0}", (char)e.GetKeyCod());
+		if (e.GetKeyCode() == KALUO_KEY_TAB)
 		{
-			KaluoEngine::KeyPressedEvent& e = (KaluoEngine::KeyPressedEvent&)event;
-			//KALUO_TRACE("key code {0}", (char)e.GetKeyCode());
-			if (e.GetKeyCode() == KALUO_KEY_TAB)
-			{
-				KALUO_TRACE("Tab key is pressed (event)");
-			}
-
+			KALUO_TRACE("Tab key is pressed (event)");
 		}
 	}
+}
 ```
 
 and the it is independent from glfw key code and the terminal shows this:  
@@ -71,16 +69,16 @@ Since ImGui is part of engine, so it will be centralized in the engine.
 In the application.h it contains the pointer which when applcation is constructed, it calls 👇
 
 ```c++
-	m_ImGuiLayer = new ImGuiLayer; 
+m_ImGuiLayer = new ImGuiLayer; 
 ```
 
 and render imgui layer at the run() function and eventually this part at application::run() will be run on the render thread later on update)  
 
 ```c++
-	m_ImGuiLayer->Begin();
-	for (Layer* EachLayer : m_LayerStack)
-		EachLayer->OnImGuiRender();
-	m_ImGuiLayer->End();
+m_ImGuiLayer->Begin();
+for (Layer* EachLayer : m_LayerStack)
+	EachLayer->OnImGuiRender();
+m_ImGuiLayer->End();
 ```
 
 Two sides of render:  
