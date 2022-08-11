@@ -25,7 +25,8 @@ namespace KaluoEngine {
 		//event call back go in o windowData--EventCallbackFn
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 
-
+		m_ImGuiLayer = new ImGuiLayer;
+		PushOverlay(m_ImGuiLayer);
 		/*unsigned int id;
 		glGenVertexArrays(1, &id);*/
 		//m_Window = Window::Create();
@@ -89,9 +90,17 @@ namespace KaluoEngine {
 			glClearColor(1, 0, 1, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
+
+
 			//update in forward order
 			for (Layer* EachLayer : m_LayerStack)
 				EachLayer->OnUpdate();
+
+			m_ImGuiLayer->Begin();
+			for (Layer* EachLayer : m_LayerStack)
+				EachLayer->OnImGuiRender();
+			m_ImGuiLayer->End();
+
 
 			//test if input instace is working
 			//auto [x, y] = Input::GetMousePosition();

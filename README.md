@@ -58,3 +58,20 @@ and the it is independent from glfw key code and the terminal shows this:
 ![image](https://github.com/Zhengkaluo/GameEngine_PersonalProject/blob/main/IMG/Poll-Event.png)
 
 OpenGL math GML does not need premake file because it is a header, just include their hpp and inl files
+
+ImGui Layer changes:  
+Layer has OnImGuiRender virtual function which can be ovrrriden by any layers.  
+SandBox App does not contruct imgui layer, instead Engine automatically add ImGui layer at runtime.    
+Since ImGui is part of engine, so it will be centralized in the engine.  
+In the application.h it contains the pointer which when applcation is constructed, it calls 👇
+``` 
+m_ImGuiLayer = new ImGuiLayer; 
+```
+and render imgui layer at the run() function and eventually this part at application::run() will be run on the render thread later on update) 
+```
+	m_ImGuiLayer->Begin();
+	for (Layer* EachLayer : m_LayerStack)
+		EachLayer->OnImGuiRender();
+	m_ImGuiLayer->End();
+```
+

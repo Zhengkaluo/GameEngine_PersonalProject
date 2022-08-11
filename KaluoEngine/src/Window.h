@@ -41,7 +41,7 @@ namespace KaluoEngine {
 		virtual bool IsVSync() const = 0;
 
 		//expose the window (private) to other file
-		virtual virtual void* GetNativeWindow() const = 0;
+		virtual void* GetNativeWindow() const = 0;
 
 		static Window* Create(const WindowProps& props = WindowProps());
 

@@ -4,6 +4,7 @@
 #include "KaluoEngine/Events/Event.h"
 #include "KaluoEngine/Events/ApplicationEvent.h"
 #include "KaluoEngine/LayerStack.h"
+#include "KaluoEngine/ImGui/ImGuiLayer.h"
 #include "Window.h"
 
 namespace KaluoEngine{
@@ -30,6 +31,8 @@ namespace KaluoEngine{
 
 		//only have one application for entire application as unique pointer and it will shut down when terminal ends 
 		std::unique_ptr<Window> m_Window;
+		ImGuiLayer* m_ImGuiLayer;
+
 		//Window* m_Window;
 		bool m_Running = true;
 

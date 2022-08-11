@@ -25,7 +25,7 @@ namespace KaluoEngine {
 		//wraper over vector of layers Essential of this class
 		std::vector<Layer*> m_Layers;
 		//for making sure overlay be always the last
-		std::vector<Layer*>::iterator m_LayerInsert;
+		unsigned int m_LayerInsertIndex = 0;
 	};
 
 }

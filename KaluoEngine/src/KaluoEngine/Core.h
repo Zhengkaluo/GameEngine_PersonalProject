@@ -1,11 +1,15 @@
 #pragma once
 
 #ifdef KALUO_PLATFORM_WINDOWS
+#if KALUO_DYNAMIC_LINK
 	#ifdef KALUO_BUILD_DLL
 		#define KALUO_API _declspec(dllexport)
 	#else
 		#define KALUO_API _declspec(dllimport)
 	#endif // KZ_BUILD_DLL
+#else
+	#define KALUO_API
+#endif
 #else
 	#error KALUO Engine only supports windows;
 #endif

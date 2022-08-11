@@ -1,9 +1,8 @@
 
 //#include "../KaluoEngine/KaluoEngine.h"
 #include <KaluoEngine.h>
-#include <stdio.h>
-
-
+//#include <stdio.h>
+#include "imgui/imgui.h"
 class ExampleLayer : public KaluoEngine::Layer
 {
 public:
@@ -22,6 +21,13 @@ public:
 		{
 			KALUO_TRACE("tab key is pressed! (poll)");
 		}
+	}
+
+	virtual void OnImGuiRender() override
+	{
+		ImGui::Begin("Test");
+		ImGui::Text("Hello World");
+		ImGui::End();
 	}
 
 	void OnEvent(KaluoEngine::Event& event) override
@@ -47,7 +53,7 @@ public:
 	{
 		//std::("constructing sandbox...");
 		PushLayer(new ExampleLayer());
-		PushOverlay(new KaluoEngine::ImGuiLayer());
+		//PushOverlay(new KaluoEngine::ImGuiLayer());
 	}
 
 	~Sandbox()

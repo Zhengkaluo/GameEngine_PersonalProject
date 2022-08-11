@@ -63,9 +63,12 @@ group ""
 
 project "KaluoEngine"
     location "KaluoEngine" --[KaluoEngine is the folder inside root directory] 
-    kind "SharedLib" --indicate it is a dynamic library 
+    --kind "SharedLib" --indicate it is a dynamic library 
+    kind "StaticLib"
     language "C++"
-    staticruntime "off"
+    --staticruntime "off"
+    cppdialect "C++17"
+    staticruntime "On"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}") --for bin
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}") --for bin-int
@@ -80,6 +83,11 @@ project "KaluoEngine"
         "%{prj.name}/vendor/glm/glm/**.hpp",
         "%{prj.name}/vendor/glm/glm/**.inl",
     }
+
+    defines
+	{
+		"_CRT_SECURE_NO_WARNINGS"
+	}
 
     includedirs
     {
@@ -100,7 +108,7 @@ project "KaluoEngine"
     }
 
     filter "system:windows"
-        cppdialect "C++17"
+        --cppdialect "C++17"
         --staticruntime "On" --linking of library
         systemversion "latest"
 
@@ -111,38 +119,39 @@ project "KaluoEngine"
             "GLFW_INCLUDE_NONE"
         }
 
-        postbuildcommands
-        {
-        --[[
-            project "MyProject"
-            postbuildcommands { "copy dependencies/*.lib bin" }
-            postbuildmessage "Copying dependencies..."
-        --]]
-            ("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/SandBox/\"")
-        }
+        -- postbuildcommands
+        -- {
+        -- --[[
+        --     project "MyProject"
+        --     postbuildcommands { "copy dependencies/*.lib bin" }
+        --     postbuildmessage "Copying dependencies..."
+        -- --]]
+        --     ("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/SandBox/\"")
+        -- }
 
     filter "configurations:Debug"
         defines "KALUO_DEBUG"
         runtime "Debug"
         --buildoptions "/MDd"
-        symbols "On"
+        symbols "on"
     filter "configurations:Release"
         defines "KALUO_RELEASE"
         runtime "Release"
         --buildoptions "/MD"
-        optimize "On"
+        optimize "on"
      filter "configurations:Dist"
         defines "KALUO_DIST"
         --buildoptions "/MD"
         runtime "Release"
-        optimize "On"
+        optimize "on"
      
 
 project "SandBox"
     location "SandBox"
     kind "ConsoleApp"
     language "C++"
-    staticruntime "off"
+    cppdialect "C++17"
+    staticruntime "on"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}") --for bin
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}") --for bin-int
@@ -157,7 +166,8 @@ project "SandBox"
     {
         "KaluoEngine/vendor/spdlog/include",
         "KaluoEngine/src",
-        "KaluoEngine/vendor/glm"
+        "KaluoEngine/vendor",
+        "%{IncludeDir.glm}"
     }
 
     links
@@ -166,7 +176,7 @@ project "SandBox"
     }
 
     filter "system:windows"
-        cppdialect "C++17"
+        --cppdialect "C++17"
         --staticruntime "On" --linking of library
         systemversion "latest"
 
@@ -179,15 +189,15 @@ project "SandBox"
         defines "KALUO_DEBUG"
         runtime "Debug"
         --buildoptions "/MDd"
-        symbols "On"
+        symbols "on"
     filter "configurations:Release"
         defines "KALUO_RELEASE"
         --buildoptions "/MD"
         runtime "Release"
-        optimize "On"
+        optimize "on"
      filter "configurations:Dist"
         defines "KALUO_DIST"
         --buildoptions "/MD"
         runtime "Release"
-        optimize "On"
+        optimize "on"
      
