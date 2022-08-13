@@ -117,7 +117,7 @@ Steps (Overlaped, iterated):
 1. Build Render API
 2. Build Renderer
 
-2022/8/13:(render context)
+## 2022/8/13:(render context)
 
 ```c++
 GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle){
@@ -172,5 +172,4 @@ m_Context = new OpenGLContext(m_Window);
 m_Context->Init();
 ```
 
-we have a private variable m_windowHandle at openglcontext class, it get uesed at reference at windowswindow->init() and create the openglcontext class. if windowswindow calls swapbuffers at onupdate() it calls openglcontext->swapbuffers() which it used glfw context handling function, (so we dont have to worry about it).
-
+we have a private variable m_windowHandle at openglcontext class, it get uesed at reference at windowswindow->init() and create the openglcontext class. if windowswindow calls swapbuffers at onupdate() it calls openglcontext->swapbuffers() which it used glfw context handling function instead of we calling them instead windowswindow class, (and we dont have to worry about how it is managed since its the glfw lib function (for now ofc)). 
