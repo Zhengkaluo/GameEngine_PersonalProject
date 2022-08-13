@@ -9,8 +9,12 @@ EventDispatcher: check if event type matches the statictype if yes then handle t
 
 binding the event call back in the setup of window at the application construction (SetEventCallBack)
 
+### 2022/8/5 (ImGui imported and event handle order)
+
 EventHandle Order (credit: <https://zhuanlan.zhihu.com/p/549038718>):  
 ![image](https://github.com/Zhengkaluo/GameEngine_PersonalProject/blob/main/IMG/EventHandleOrder.jpg)
+
+### 2022/8/6 (Imgui layer and event function construction)
 
 ImGui layer inhieritated from layer class.  
 construction by Onattach function, which calles from push layer function  
@@ -18,10 +22,14 @@ Update function: get singleton app -> size update->delta time update -> newframe
 
 The OnEvent Function: through imgui layer on event function,　construct one dispatcher and bind all events function into the dispatcher,　it check the event type and　fall them into corresponding type function
 
+### 2022/8/7 (Input Polling system construction)
+
 Input Pollling system:  
 as Input class is pure virtual and windows input inherited from it. it gets to implemented by different interface (in here only windows, it could be other platform...)  
 at windows input class, it gets key pressed() by getting from application -> Window -> GLFWwindow to call the function glfwgetkey and check if certain key is pressed. it is the same for mouse and mouse pos  
 and it can be tested by application run function and call function like (auto [x, y] = Input::GetMousePosition();) and log it to test if it is working.  
+
+### 2022/8/9 Input Polling (Key Code and Mouse Code Implement)
 
 Key Code Mapping:
 implementing Own Engine Key code at Keycodes.h and mousebuttoncodes.h  
@@ -61,6 +69,8 @@ and the it is independent from glfw key code and the terminal shows this:
 ![image](https://github.com/Zhengkaluo/GameEngine_PersonalProject/blob/main/IMG/Poll-Event.png)
 
 OpenGL math GML does not need premake file because it is a header, just include their hpp and inl files
+
+### 2022/8/11 ImGui Window Docking and ImGui Layer changes
 
 ImGui Layer changes:  
 Layer has OnImGuiRender virtual function which can be ovrrriden by any layers.  
