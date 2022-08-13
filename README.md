@@ -81,6 +81,8 @@ for (Layer* EachLayer : m_LayerStack)
 m_ImGuiLayer->End();
 ```
 
+### 2022/8/12:(renderer and render class structures)
+
 Two sides of render:  
 Render API(API/ platform spectific. OpenGL, Vulcans...) (implement per API)(what should we build 👇):  
 
@@ -117,7 +119,7 @@ Steps (Overlaped, iterated):
 1. Build Render API
 2. Build Renderer
 
-## 2022/8/13:(render context)
+### 2022/8/13:(render context)
 
 ```c++
 GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle){
