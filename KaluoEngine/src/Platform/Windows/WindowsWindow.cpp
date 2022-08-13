@@ -6,7 +6,10 @@
 #include "KaluoEngine/Events/KeyEvent.h"
 #include "KaluoEngine/Events/MouseEvent.h"
 
-#include <Glad/glad.h>
+#include "Platform/OpenGL/OpenGLContext.h"
+
+//glad is opengl specific so it moves to openglcontext.h and not here anymore
+//#include <Glad/glad.h>
 
 namespace KaluoEngine {
 
@@ -40,6 +43,7 @@ namespace KaluoEngine {
 
 		KALUO_CORE_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
 
+
 		if (!s_GLFWInitialized)
 		{
 			// TODO: glfwTerminate on system shutdown
@@ -49,12 +53,12 @@ namespace KaluoEngine {
 			glfwSetErrorCallback(GLFWErrorCallback);
 			s_GLFWInitialized = true;
 		}
+
 		//create glfw window
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-		glfwMakeContextCurrent(m_Window);
 
-		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		KALUO_CORE_ASSERT(status, "Failed to initialize Glad!");
+		m_Context = new OpenGLContext(m_Window);
+		m_Context->Init();
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
@@ -168,7 +172,7 @@ namespace KaluoEngine {
 	void WindowsWindow::OnUpdate()
 	{
 		glfwPollEvents();
-		glfwSwapBuffers(m_Window);
+		m_Context->SwapBuffers();
 	}
 
 	void WindowsWindow::SetVSync(bool enabled)

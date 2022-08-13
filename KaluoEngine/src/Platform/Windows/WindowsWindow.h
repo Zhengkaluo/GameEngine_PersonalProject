@@ -1,7 +1,8 @@
 #pragma once
 #include "Window.h"
-#include <GLFW/glfw3.h>
+#include "KaluoEngine/Renderer/GraphicsContext.h"
 
+#include <GLFW/glfw3.h>
 //struct GLFWwindow;
 
 namespace KaluoEngine {
@@ -29,6 +30,8 @@ namespace KaluoEngine {
 		virtual void Shutdown();
 	private:
 		GLFWwindow* m_Window;
+
+		GraphicsContext* m_Context;
 
 		struct WindowData
 		{

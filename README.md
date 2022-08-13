@@ -116,3 +116,61 @@ Steps (Overlaped, iterated):
 
 1. Build Render API
 2. Build Renderer
+
+2022/8/13:(render context)
+
+```c++
+GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle){
+	//it gets the window
+	GLFWwindow* window = (_GLFWwindow*) handle;
+	//with the window it can have window->context
+}
+
+```
+
+within this function we would like to have a specific context for the window to render, and glfw does the internal job. glfwc context can be opengl, vulcan...
+
+One window, one rendering context. context is static. should the windoswindow own the context? or other ownership. the reason of static context is the context does not need to be changed, if yes then create a new window instead.  
+
+thoughts: we create pure virtual class graphics context for context specific class to inheirated, by that we have for now openglcontext class to creat context for glfwMakeContextCurrent()
+
+```c++
+class GraphicsContext
+{
+public:
+	virtual void Init() = 0;
+	virtual void SwapBuffers() = 0;
+};
+
+class OpenGLContext : public GraphicsContext
+{
+public:
+	OpenGLContext(GLFWwindow* windowHandle);
+	virtual void Init() override;
+	virtual void SwapBuffers() override;
+
+private:
+	GLFWwindow* m_windowHandle;
+};
+
+void OpenGLContext::Init()
+{
+	glfwMakeContextCurrent(m_windowHandle);
+	int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+	KALUO_CORE_ASSERT(status, "Failed to initialize Glad!");
+}
+void OpenGLContext::SwapBuffers()
+{
+	glfwSwapBuffers(m_windowHandle);
+}
+```
+
+```c++
+//where m_window is glfwwindow and with glfwwindow we pass it as reference into openglcontext
+m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+m_Context = new OpenGLContext(m_Window);
+m_Context->Init();
+```
+
+we have a private variable m_windowHandle at openglcontext class, it get uesed at reference at windowswindow->init() and create the openglcontext class. if windowswindow calls swapbuffers at onupdate() it calls openglcontext->swapbuffers() which it used glfw context handling function, (so we dont have to worry about it).
+
