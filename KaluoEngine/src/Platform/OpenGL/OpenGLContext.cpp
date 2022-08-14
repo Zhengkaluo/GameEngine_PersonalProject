@@ -17,6 +17,12 @@ namespace KaluoEngine {
 		glfwMakeContextCurrent(m_windowHandle);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		KALUO_CORE_ASSERT(status, "Failed to initialize Glad!");
+
+		//check what gpu we are using:
+		KALUO_CORE_INFO("OpenGL vendor: {0}", glGetString(GL_VENDOR));
+		KALUO_CORE_INFO("OpenGL renderer: {0}", glGetString(GL_RENDERER));
+		KALUO_CORE_INFO("OpenGL version: {0}", glGetString(GL_VERSION));
+
 	}
 
 	void OpenGLContext::SwapBuffers()

@@ -15,6 +15,7 @@ Learning from the famous Hazel Engine
 		- [[2022/8/11] ImGui Window Docking and ImGui Layer changes](#2022811-imgui-window-docking-and-imgui-layer-changes)
 		- [[2022/8/12] (renderer and render class structures)](#2022812-renderer-and-render-class-structures)
 		- [[2022/8/13] (render context)](#2022813-render-context)
+		- [[2022/8/14] some first context in the engine](#2022814-some-first-context-in-the-engine)
 
 ### [2022/8/1] (some small things)
 
@@ -200,3 +201,36 @@ m_Context->Init();
 ```
 
 we have a private variable m_windowHandle at openglcontext class, it get uesed at reference at windowswindow->init() and create the openglcontext class. if windowswindow calls swapbuffers at onupdate() it calls openglcontext->swapbuffers() which it used glfw context handling function instead of we calling them instead windowswindow class, (and we dont have to worry about how it is managed since its the glfw lib function (for now ofc)). 
+
+### [2022/8/14] some first context in the engine
+
+we would try to create 1. vertex array, 2. vertex buffer, 3. index buffer.
+
+```c++
+Rendering_The_Vertex{
+	//Steps: Vertex Array + Vertex Buffer + Index Buffer
+	//Shader, use default shader
+	// generate vertex array object names in here 'm_VertexArray', and bind the name with the object
+	glGenVertexArrays(1, &m_VertexArray);
+	glBindVertexArray(m_VertexArray);
+	//generate buffer object names and bind the vertex attributes target
+	glGenBuffers(1, &m_VertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+	float vertices[3 * 3] = {
+		-0.5f, -0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f,
+		0.0f, 0.5f, 0.0f
+	};
+	//upload data to gpu, static draw meaning we are not continuing refreshing
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	//enable the first vertex attribute
+	glEnableVertexAttribArray(0);
+	//define an array of generic vertex attribute data, stride meaning each column of 3*3 has 3 float data (每行有三个float)
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+	glGenBuffers(1, &m_IndexBuffer);
+	//what order to draw, target: Vertex array indices
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
+	unsigned int indices[3] = { 0, 1, 2 };
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
+}
+```

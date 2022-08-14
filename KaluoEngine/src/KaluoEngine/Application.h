@@ -38,6 +38,9 @@ namespace KaluoEngine{
 
 		LayerStack m_LayerStack;
 
+		//for context rendering
+		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+
 	private:
 		//singleton application
 		static Application* s_Instance;
