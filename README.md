@@ -16,6 +16,7 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 		- [[2022/8/12] (renderer and render class structures)](#2022812-renderer-and-render-class-structures)
 		- [[2022/8/13] (render context)](#2022813-render-context)
 		- [[2022/8/14] some first context in the engine](#2022814-some-first-context-in-the-engine)
+		- [[2022/8/15] shaders](#2022815-shaders)
 
 ### [2022/8/1] (some small things)
 
@@ -234,3 +235,11 @@ Rendering_The_Vertex{
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
 }
 ```
+
+### [2022/8/15] shaders
+
+we tell gpu what to do with data we sent it, vertex shader tells what to do with the vertex data it receives specifically (points out where it in the window). pixel shader/fragement shader figures out what color should be.
+
+<style>
+pre{white-space: pre !important;  overflow-y: scroll !important;  height: 50vh !important;}
+</style>
