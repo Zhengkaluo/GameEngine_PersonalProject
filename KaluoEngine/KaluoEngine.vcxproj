@@ -156,6 +156,7 @@
     <ClInclude Include="src\KaluoEngine\Log.h" />
     <ClInclude Include="src\KaluoEngine\MouseButtonCodes.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\GraphicsContext.h" />
+    <ClInclude Include="src\KaluoEngine\Renderer\Shader.h" />
     <ClInclude Include="src\Kaluopch.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
@@ -584,6 +585,7 @@
     <ClCompile Include="src\KaluoEngine\Layer.cpp" />
     <ClCompile Include="src\KaluoEngine\LayerStack.cpp" />
     <ClCompile Include="src\KaluoEngine\Log.cpp" />
+    <ClCompile Include="src\KaluoEngine\Renderer\Shader.cpp" />
     <ClCompile Include="src\Kaluopch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

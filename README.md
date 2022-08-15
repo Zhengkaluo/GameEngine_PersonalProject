@@ -240,6 +240,79 @@ Rendering_The_Vertex{
 
 we tell gpu what to do with data we sent it, vertex shader tells what to do with the vertex data it receives specifically (points out where it in the window). pixel shader/fragement shader figures out what color should be.
 
-<style>
-pre{white-space: pre !important;  overflow-y: scroll !important;  height: 50vh !important;}
-</style>
+OpenGL shader compile: <https://www.khronos.org/opengl/wiki/Shader_Compilation#Example>
+
+In the engine our shader class: 
+
+```c++
+class Shader
+{
+public:
+	//from opengl wiki we know it takes two parameters of a vertex/fragment shader
+	//std::string vertexSource = // Get source code for vertex shader.
+	// std::string fragmentSource = // Get source code for fragment shader.
+	Shader(const std::string& vertexSource, const std::string& fragmentSource);
+	~Shader();
+	void Bind() const;
+	void UnBind() const;
+private:
+	uint32_t m_RenderID;
+};
+
+void Shader::Bind() const
+{
+	glUseProgram(m_RenderID);
+}
+void Shader::UnBind() const
+{
+	glUseProgram(0);
+}
+
+```
+
+in the shader construction function: we do vertex shader compile and then fragment shader compile, and if both succeed, we create a opengl program by
+
+```c++
+GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER); //vertex shader construction
+//checking...
+GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER); //fragment shader construction
+//checking...
+GLuint program = glCreateProgram(); //create programe
+//checking...
+```
+
+and do the linking and check if linking fails. and after all checks succeed, we do detaches by
+
+```c++
+glDetachShader(program, vertexShader);
+glDetachShader(program, fragmentShader);
+```
+
+inside application.cpp we construct two shaders: and its using varying position for color settings(fragment shader)
+
+```c++
+//source code of shader
+std::string vertexSrc = R"(
+	#version 330 core
+	
+	layout(location = 0) in vec3 a_Position;
+	//varying variable 
+	out vec3 v_Position;
+	void main()
+	{
+		v_Position = a_Position;
+		gl_Position = vec4(a_Position, 1.0);	
+	}
+)";
+std::string fragmentSrc = R"(
+	#version 330 core
+	
+	layout(location = 0) out vec4 color;
+	in vec3 v_Position;
+	void main()
+	{
+		color = vec4(v_Position * 0.5 + 0.5, 1.0);
+	}
+)";
+```
+
