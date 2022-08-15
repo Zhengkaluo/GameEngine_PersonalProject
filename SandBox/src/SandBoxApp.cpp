@@ -25,7 +25,7 @@ public:
 
 	virtual void OnImGuiRender() override
 	{
-		ImGui::Begin("Test");
+		ImGui::Begin("Kaluo Engine Info:");
 		ImGui::Text("Hello World");
 		ImGui::End();
 	}

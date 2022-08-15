@@ -17,6 +17,10 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 		- [[2022/8/13] (render context)](#2022813-render-context)
 		- [[2022/8/14] some first context in the engine](#2022814-some-first-context-in-the-engine)
 		- [[2022/8/15] shaders](#2022815-shaders)
+		- [[2022/8/15] Rendering API Abstraction](#2022815-rendering-api-abstraction)
+			- [abstract class of buffer](#abstract-class-of-buffer)
+			- [for specific opengl buffer api:](#for-specific-opengl-buffer-api)
+			- [Example Of Buffer Create:](#example-of-buffer-create)
 
 ### [2022/8/1] (some small things)
 
@@ -207,6 +211,8 @@ we have a private variable m_windowHandle at openglcontext class, it get uesed a
 
 we would try to create 1. vertex array, 2. vertex buffer, 3. index buffer.
 
+(from 8/15 this part has a abstract class name buffer.h and openglbuffer.h is getting implemented to create all the buffer (index and vertices))
+
 ```c++
 Rendering_The_Vertex{
 	//Steps: Vertex Array + Vertex Buffer + Index Buffer
@@ -272,6 +278,7 @@ void Shader::UnBind() const
 
 in the shader construction function: we do vertex shader compile and then fragment shader compile, and if both succeed, we create a opengl program by
 
+
 ```c++
 GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER); //vertex shader construction
 //checking...
@@ -314,5 +321,129 @@ std::string fragmentSrc = R"(
 		color = vec4(v_Position * 0.5 + 0.5, 1.0);
 	}
 )";
+```
+
+### [2022/8/15] Rendering API Abstraction
+
+Goal: make the shader construction (above👆) generic. Eventually we want to have classes like VertexBuffer, IndexBuffer... so that we can simply call:
+
+```c++
+auto buffer = VertexBuffer::Create(size, vertices);
+buffer.Bind();
+```
+
+selecting api, by IFDEF or something else.
+shader file, if directx then... if opengl then...
+
+From: <https://zhuanlan.zhihu.com/p/69397055>
+some relations:
+
+1. D3D: HLSL
+2. OpenGL：GLSL
+3. OpenGLES：ESSL
+4. Metal：MSL
+5. Vulkan：SPIR-V
+
+shader api solutions:
+
+1. 为每个 API 编写一套 Shader。简单粗暴，但维护工作量巨大。
+
+2. 使用宏定义区分 Shader 差异。有些 Shader 的语法比较接近，可以编写一些辅助宏来抽象出 Shader 之间的差异，比如：
+
+3. 以某一个图形 API 的 Shader 作为源，转换成目标 API Shader 源码，也就是 Source - Source 的方式，再使用目标 API 的 Shader 编译器进行编译。例如 UE4 采用的就是这种方案，UE4 用 HLSL 作为面向开发者的 统一格式，材质编辑器中生成的 Shader 也是 HLSL 格式，在转成其他 API Shader 时，采用的是在 Mesa 的 GLSL 编译器技术上自研的 HLSLCC，并且为每个图形 API 编写 Shader 后端（对应下图的绿色部分），生成对应的 Shader 源码并进行编译。UE4 Shader 跨平台编译架构如下图：
+
+![image](https://github.com/Zhengkaluo/GameEngine_PersonalProject/blob/main/IMG/UE4_Shader_Structure.jpg)
+
+#### abstract class of buffer
+
+inside create function we decide which api we are using and which class type we instantiate
+
+```c++
+class VertexBuffer
+{
+public:
+	virtual ~VertexBuffer() {}
+	//virtual void SetData()
+	//define interface
+	virtual void Bind() const = 0;
+	virtual void UnBind() const = 0;
+	//get data of vertices,  play as constructor
+	static VertexBuffer* Create(float* vertices, uint32_t size);
+};
+class IndexBuffer
+{
+	virtual ~IndexBuffer() {}
+	//define interface
+	virtual void Bind() const = 0;
+	virtual void UnBind() const = 0;
+	//get data of indices,  play as constructor
+	static IndexBuffer* Create(uint32_t* indices, uint32_t size);
+};
+```
+
+#### for specific opengl buffer api:
+
+```c++
+class OpenGLVertexBuffer : public VertexBuffer 
+{
+public:
+	//parameter as VertexBuffer create function takes 
+	OpenGLVertexBuffer(float* vertices, uint32_t size);
+	virtual ~OpenGLVertexBuffer();
+	virtual void Bind() const;
+	virtual void UnBind() const;
+private:
+	uint32_t m_RendererID;
+};
+
+class OpenGLIndexBuffer : public IndexBuffer
+{
+public:
+	//parameter as VertexBuffer create function takes 
+	OpenGLIndexBuffer(uint32_t* indices, uint32_t count);
+	virtual ~OpenGLIndexBuffer();
+	virtual uint32_t GetCount() const { return m_Count; }
+	virtual void Bind() const;
+	virtual void UnBind() const;
+private:
+	uint32_t m_Count;
+	uint32_t m_RendererID;
+};
+
+```
+
+and implementation of openglvertex buffer creation:
+
+```c++
+OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
+{
+	//typedef void (APIENTRYP PFNGLCREATEBUFFERSPROC)
+	//(GLsizei n, GLuint *buffers)
+	glCreateBuffers(1, &m_RendererID);
+	glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+}
+```
+
+#### Example Of Buffer Create:
+
+(how it implmented to devided each api)
+
+```c++
+VertexBuffer* VertexBuffer::Create(float* vertices, uint32_t size)
+{
+	//decide which api we are using
+	//which class type we instantiate
+	switch (Renderer::GetAPI())
+	{
+		case RendererAPI::None: 
+			KALUO_CORE_ASSERT(false, "None RenderAPi is not supported!");
+			return nullptr;
+		case RendererAPI::OpenGL:
+			return new OpenGLVertexBuffer(vertices, size);
+	}
+	KALUO_CORE_ASSERT(false, "UnKnown Renderer API!");
+	return nullptr;
+}
 ```
 

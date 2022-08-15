@@ -35,31 +35,41 @@ namespace KaluoEngine {
 		glGenVertexArrays(1, &m_VertexArray);
 		glBindVertexArray(m_VertexArray);
 
-		//generate buffer object names and bind the vertex attributes target
-		glGenBuffers(1, &m_VertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
-
+		
 		float vertices[3 * 3] = {
 			-0.5f, -0.5f, 0.0f,
 			0.5f, -0.5f, 0.0f,
 			0.0f, 0.5f, 0.0f
 		};
 		
-		//upload data to gpu, static draw meaning we are not continuing refreshing
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		// generate buffer object names and bind the vertex attributes target
+		// we dont need to genearte here code by code (so thtere are three commend out lines) 
+		// since we have a openglBuffer class for generation now
+		// instead we use the unique pointer of vertex buffer and construct it
+		// glGenBuffers(1, &m_VertexBuffer);
+		// glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+		// //upload data to gpu, static draw meaning we are not continuing refreshing
+		// glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+		m_VertexBuffer->Bind();
+
+		
 		//enable the first vertex attribute
 		glEnableVertexAttribArray(0);
 
 		//define an array of generic vertex attribute data, stride meaning each column of 3*3 has 3 float data (每行有三个float)
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 
-		glGenBuffers(1, &m_IndexBuffer);
-		//what order to draw, target: Vertex array indices
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
+		// same as buffer, we have now a interface class of index buffer class to genearte and bind for us
+		// so the following three codes are commended
+		// glGenBuffers(1, &m_IndexBuffer);
+		// // what order to draw, target: Vertex array indices
+		// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
+		// glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
 
 		unsigned int indices[3] = { 0, 1, 2 };
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
+		m_IndexBuffer.reset(IndexBuffer::Create(indices, (sizeof(indices) / sizeof(uint32_t))));
 		
 		//source code of shader
 		std::string vertexSrc = R"(
@@ -148,7 +158,7 @@ namespace KaluoEngine {
 
 			m_Shader->Bind();
 			glBindVertexArray(m_VertexArray);
-			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+			glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 			//update in forward order
 			for (Layer* EachLayer : m_LayerStack)
