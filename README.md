@@ -352,7 +352,7 @@ shader api solutions:
 
 3. 以某一个图形 API 的 Shader 作为源，转换成目标 API Shader 源码，也就是 Source - Source 的方式，再使用目标 API 的 Shader 编译器进行编译。例如 UE4 采用的就是这种方案，UE4 用 HLSL 作为面向开发者的 统一格式，材质编辑器中生成的 Shader 也是 HLSL 格式，在转成其他 API Shader 时，采用的是在 Mesa 的 GLSL 编译器技术上自研的 HLSLCC，并且为每个图形 API 编写 Shader 后端（对应下图的绿色部分），生成对应的 Shader 源码并进行编译。UE4 Shader 跨平台编译架构如下图：
 
-![image](https://github.com/Zhengkaluo/GameEngine_PersonalProject/blob/main/IMG/UE4_Shader_Structure.jpg)
+![image](https://github.com/Zhengkaluo/GameEngine_PersonalProject/blob/main/IMG/UE4%20_Shader_Structure.jpg)
 
 #### abstract class of buffer
 
