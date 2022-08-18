@@ -15,6 +15,27 @@ namespace KaluoEngine {
 	
 	Application* Application::s_Instance = nullptr;
 
+	//2022-8-18 convert buffer layout datatype into opengl data type
+	static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
+	{
+		switch (type)
+		{
+		case KaluoEngine::ShaderDataType::Float: return GL_FLOAT;
+		case KaluoEngine::ShaderDataType::Float2: return GL_FLOAT;
+		case KaluoEngine::ShaderDataType::Float3: return GL_FLOAT;
+		case KaluoEngine::ShaderDataType::Float4: return GL_FLOAT;
+		case KaluoEngine::ShaderDataType::Mat3: return GL_FLOAT;
+		case KaluoEngine::ShaderDataType::Mat4: return GL_FLOAT;
+		case KaluoEngine::ShaderDataType::Int: return GL_INT;
+		case KaluoEngine::ShaderDataType::Int2: return GL_INT;
+		case KaluoEngine::ShaderDataType::Int3: return GL_INT;
+		case KaluoEngine::ShaderDataType::Int4: return GL_INT;
+		case KaluoEngine::ShaderDataType::Bool: return GL_BOOL;
+		}
+		KALUO_CORE_ASSERT(false, "Unknow shader data type to convert!");
+		return 0;
+	}
+
 	Application::Application()
 	{
 		KALUO_CORE_ASSERT(!s_Instance, "Application already exists!");
@@ -36,10 +57,10 @@ namespace KaluoEngine {
 		glBindVertexArray(m_VertexArray);
 
 		
-		float vertices[3 * 3] = {
-			-0.5f, -0.5f, 0.0f,
-			0.5f, -0.5f, 0.0f,
-			0.0f, 0.5f, 0.0f
+		float vertices[3 * 7] = {
+			-0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
+			0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
+			0.0f, 0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
 		};
 		
 		// generate buffer object names and bind the vertex attributes target
@@ -52,15 +73,37 @@ namespace KaluoEngine {
 		// glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-		m_VertexBuffer->Bind();
+		//m_VertexBuffer->Bind();
+		//constructing buffer layout class by sending bufferelements
+		{
+			BufferLayout Elementlayout{
+				//takes in buffer elements initializer_list
+				{ ShaderDataType::Float3, "a_Position" },
+				{ ShaderDataType::Float4, "a_Color "}
+			};
+			m_VertexBuffer->SetLayout(Elementlayout);
+		}
+		
+		uint32_t index = 0;
+		const auto& layout = m_VertexBuffer->GetLayout();
+
+		for (const auto& element : layout)
+		{
+			//enable the first vertex attribute
+			glEnableVertexAttribArray(index);
+			//define an array of generic vertex attribute data, stride meaning each column of 3*3 has 3 float data (每行有三个float)
+			//2022-8-18: conversion of ShaderDataType into gl function parameters
+			glVertexAttribPointer(index,
+				element.GetComponentCount(),
+				ShaderDataTypeToOpenGLBaseType(element.Type),
+				element.Normalized ? GL_TRUE : GL_FALSE,
+				layout.GetStride(),
+				(const void*)element.Offset
+			);
+			index++;
+		}
 
 		
-		//enable the first vertex attribute
-		glEnableVertexAttribArray(0);
-
-		//define an array of generic vertex attribute data, stride meaning each column of 3*3 has 3 float data (每行有三个float)
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-
 		// same as buffer, we have now a interface class of index buffer class to genearte and bind for us
 		// so the following three codes are commended
 		// glGenBuffers(1, &m_IndexBuffer);
@@ -78,9 +121,14 @@ namespace KaluoEngine {
 			layout(location = 0) in vec3 a_Position;
 			//varying variable 
 			out vec3 v_Position;
+			out vec4 v_Color;
+			//color
+			layout(location = 1) in vec4 a_Color;		
+
 			void main()
 			{
 				v_Position = a_Position;
+				v_Color  = a_Color;
 				gl_Position = vec4(a_Position, 1.0);	
 			}
 		)";
@@ -90,9 +138,13 @@ namespace KaluoEngine {
 			
 			layout(location = 0) out vec4 color;
 			in vec3 v_Position;
+			in vec4 v_Color;
+
 			void main()
 			{
 				color = vec4(v_Position * 0.5 + 0.5, 1.0);
+				color = v_Color;
+
 			}
 		)";
 

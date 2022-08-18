@@ -21,6 +21,7 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 			- [abstract class of buffer](#abstract-class-of-buffer)
 			- [for specific opengl buffer api:](#for-specific-opengl-buffer-api)
 			- [Example Of Buffer Create:](#example-of-buffer-create)
+		- [[2022/8/16] VertexBuffer data type. For vertex buffer layouts](#2022816-vertexbuffer-data-type-for-vertex-buffer-layouts)
 
 ### [2022/8/1] (some small things)
 
@@ -447,3 +448,113 @@ VertexBuffer* VertexBuffer::Create(float* vertices, uint32_t size)
 }
 ```
 
+### [2022/8/16] VertexBuffer data type. For vertex buffer layouts
+
+the reason we want to have the layout settings is to get rid of the annoying hand-typed 
+
+```c++
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+glVertexAttribPointer(0, 5, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+```
+
+and have a structure like this: and this layout is easy to be checked
+and iterally checkin vertex inside the bufferlayout in opengl
+GetComponentCount() is a function of BufferElement
+
+```c++
+//float 3 for position and float 4 for color in total 3 * 7
+float vertices[3 * 7] = 
+{
+	-0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
+	0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
+	0.0f, 0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
+};
+
+BufferLayout Elementlayout
+{
+	//takes in buffer elements initializer_list
+	{ ShaderDataType::Float3, "a_Position" },
+	{ ShaderDataType::Float4, "a_Color" }
+}
+uint32_t index = 0;
+const auto& layout = m_VertexBuffer->GetLayout();
+for (const auto& element : layout)
+{
+	//enable the first vertex attribute
+	glEnableVertexAttribArray(index);
+	//define an array of generic vertex attribute data, stride meaning each column of3*3has 3 float data (每行有三个float)
+	//2022-8-18: conversion of ShaderDataType into gl function parameters
+	glVertexAttribPointer(index, 
+		element.GetComponentCount(), 
+		ShaderDataTypeToOpenGLBaseType(element.Type), 
+		element.Normalized ? GL_TRUE : GL_FALSE, 
+		layout.GetStride(),
+		(const void *)element.Offset
+	);
+	index++;
+}
+```
+
+the implementation of this layout construction is: 
+it calculated offset and the stride of the buffer automatically preventing hand typing data
+
+```c++
+struct BufferElement
+{
+	std::string Name;
+	ShaderDataType Type;
+	uint32_t Offset;
+	uint32_t Size;
+	//uint32_t Count;
+	bool Normalized;
+
+	//consturctor, offset is calculated by ourselves
+	BufferElement(ShaderDataType type, const std::string& name，bool normalized = false)
+		: Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized)
+	{
+	}
+};
+
+class BufferLayout
+{
+public:
+	//constructor takes in initializer_list and convert into vector, and calculate offset
+	BufferLayout(const std::initializer_list<BufferElement> element)
+		: m_Elements(element) 
+	{
+		CalculateOffsetsAndStride();
+	}
+
+	inline uint32_t GetStride() const { return m_Stride; }
+	inline const std::vector<BufferElement>& GetElements() const { m_Elements; };
+		
+	std::vector<BufferElement>::const_iterator begin() const { return m_Elements.begin(); }
+	std::vector<BufferElement>::const_iterator end() const { return m_Elements.end(); }
+private:
+	//calculate element offset and stride
+	void CalculateOffsetsAndStride()
+	{
+		uint32_t offset = 0;
+		m_Stride = 0;
+		for (auto& element : m_Elements)
+		{
+			element.Offset = offset;
+			offset += element.Size;
+			m_Stride += element.Size;
+		}
+	}
+private:
+	std::vector<BufferElement> m_Elements;
+	uint32_t m_Stride = 0;
+};
+```
+
+and also buffer class and specific OpenGLBuffer (override) is added to have and called setlayout to the vertex buffer when application.cpp has initialized a valid layout variable.
+
+```c++
+virtual void SetLayout(const BufferLayout& layout) = 0;
+virtual const BufferLayout& GetLayout() const = 0;
+
+BufferLayout m_Layout;
+```
