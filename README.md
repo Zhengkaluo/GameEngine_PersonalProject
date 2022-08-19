@@ -22,6 +22,12 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 			- [for specific opengl buffer api:](#for-specific-opengl-buffer-api)
 			- [Example Of Buffer Create:](#example-of-buffer-create)
 		- [[2022/8/16] VertexBuffer data type. For vertex buffer layouts](#2022816-vertexbuffer-data-type-for-vertex-buffer-layouts)
+			- [example of vertex array genearation with layout](#example-of-vertex-array-genearation-with-layout)
+			- [layout class implementation](#layout-class-implementation)
+		- [[2022/8/19] Vertex Arrays](#2022819-vertex-arrays)
+			- [idea of vertexarray class and implementation](#idea-of-vertexarray-class-and-implementation)
+			- [example of creating vertex buffer and index buffer](#example-of-creating-vertex-buffer-and-index-buffer)
+			- [example of creaeting blue shader](#example-of-creaeting-blue-shader)
 
 ### [2022/8/1] (some small things)
 
@@ -458,6 +464,8 @@ glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 glVertexAttribPointer(0, 5, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 ```
 
+#### example of vertex array genearation with layout
+
 and have a structure like this: and this layout is easy to be checked
 and iterally checkin vertex inside the bufferlayout in opengl
 GetComponentCount() is a function of BufferElement
@@ -495,6 +503,8 @@ for (const auto& element : layout)
 	index++;
 }
 ```
+
+#### layout class implementation
 
 the implementation of this layout construction is: 
 it calculated offset and the stride of the buffer automatically preventing hand typing data
@@ -557,4 +567,138 @@ virtual void SetLayout(const BufferLayout& layout) = 0;
 virtual const BufferLayout& GetLayout() const = 0;
 
 BufferLayout m_Layout;
+```
+
+### [2022/8/19] Vertex Arrays
+
+'pointers' to vertex buffer and index buffer. 'just a reference'
+opengl has vertex array but directx does not. so we would like to achieve this in an abstract way. and we try to moved all opengl api related functions into platform opengl related class. and using abstract class like vertexarray, vertexbuffer to handling which api should do the work (of course for now is all opengl)
+
+#### idea of vertexarray class and implementation
+
+so the part of [example of vertex array genearation with layout](#example-of-vertex-array-genearation-with-layout)
+
+is done in the OpenGLVertexarray class which is child class of abstract class vertexarray class. glBindVertexArray(), glGenVertexArrays(), glBindVertexArray() and handling vertex attribt part are all moved/'redealt' into vertexarray class.
+
+```c++
+class OpenGLVertexArray : public VertexArray 
+{
+public:
+	OpenGLVertexArray();
+	~OpenGLVertexArray() {}
+	virtual void Bind() const override;
+	virtual void UnBind() const override;
+	virtual void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer) override;
+	virtual void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer) override;
+
+private:
+	uint32_t m_RendererID;
+	//mirroring all vertex buffers in the shared pointer list and index buffer
+	std::vector<std::shared_ptr<VertexBuffer>> m_VertexBuffers;
+	std::shared_ptr<IndexBuffer> m_IndexBuffer;
+};
+
+//implemeentation of this
+void OpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
+{
+	glBindVertexArray(m_RendererID);
+	vertexBuffer->Bind();
+	uint32_t index = 0;
+	const auto& layout = vertexBuffer->GetLayout();
+	for (const auto& element : layout)
+	{
+		//enable the first vertex attribute
+		glEnableVertexAttribArray(index);
+		//define an array of generic vertex attribute data, stride meaning each column of 3*3 has 3 float data (每行有三个float)
+		//2022-8-18: conversion of ShaderDataType into gl function parameters
+		glVertexAttribPointer(index,
+			element.GetComponentCount(),
+			ShaderDataTypeToOpenGLBaseType(element.Type),
+			element.Normalized ? GL_TRUE : GL_FALSE,
+			layout.GetStride(),
+			(const void*)element.Offset
+		);
+		index++;
+	}
+	m_VertexBuffers.push_back(vertexBuffer);
+}
+void OpenGLVertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
+{
+	glBindVertexArray(m_RendererID);
+	indexBuffer->Bind();
+	m_IndexBuffer = indexBuffer;
+}
+```
+
+with all this is an example of rendering a square steps:
+
+1. creat vertices
+2. create vertex buffer with vertices
+3. set layout of vertex buffer
+4. add vertex buffer to vertex array
+5. create indices and index buffer  
+6. set index buffer to the vertex array
+7. create shader
+8. run draw function
+
+#### example of creating vertex buffer and index buffer 
+
+```c++
+m_SquareVA.reset(VertexArray::Create());
+
+float SqaureVertices[3 * 4] = {
+	-0.5f, -0.5f, 0.0f, 
+	0.5f, -0.5f, 0.0f,
+	0.5f, 0.5f, 0.0f,
+	-0.5f, 0.5f, 0.0f
+};
+std::shared_ptr<VertexBuffer> SquareVB; 
+SquareVB.reset(VertexBuffer::Create(SqaureVertices, sizeof(SqaureVertices)));
+BufferLayout SquareVBlayout{
+	//takes in buffer elements initializer_list
+	{ ShaderDataType::Float3, "a_Position" },
+};
+SquareVB->SetLayout(SquareVBlayout);
+m_SquareVA->AddVertexBuffer(SquareVB);
+unsigned int SquareIndices[6] = { 0, 1, 2, 2, 3, 0};
+std::shared_ptr<IndexBuffer>SquareIndexBuffer; 
+SquareIndexBuffer.reset(IndexBuffer::Create(SquareIndices, (sizeof(SquareIndices) /sizeo(uint32_t))));
+m_SquareVA->SetIndexBuffer(SquareIndexBuffer);
+```
+
+#### example of creaeting blue shader
+
+```c++
+//create shaders:
+std::string BlueShadervertexSrc = R"(
+	#version 330 core
+	
+	layout(location = 0) in vec3 a_Position;
+	out vec3 v_Position;
+	void main()
+	{
+		v_Position = a_Position;
+		gl_Position = vec4(a_Position, 1.0);	
+	}
+)";
+std::string BlueShaderfragmentSrc = R"(
+	#version 330 core
+	
+	layout(location = 0) out vec4 color;
+	in vec4 v_Color;
+	void main()
+	{
+		color = vec4(0.2, 0.3, 0.8, 1.0);
+	}
+)";
+m_BlueShader.reset(new Shader(BlueShadervertexSrc, BlueShaderfragmentSrc));
+```
+
+and finally draw it in the run time function
+
+```c++
+//in run function():
+m_BlueShader->Bind();
+m_SquareVA->Bind();
+glDrawElements(GL_TRIANGLES, m_SquareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 ```

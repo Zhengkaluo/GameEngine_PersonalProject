@@ -83,7 +83,7 @@ namespace KaluoEngine {
 			CalculateOffsetsAndStride();
 		}
 		inline uint32_t GetStride() const { return m_Stride; }
-		inline const std::vector<BufferElement>& GetElements() const { m_Elements; };
+		inline const std::vector<BufferElement>& GetElements() const { return m_Elements; };
 
 		//providing layout iteration  
 		std::vector<BufferElement>::iterator begin() { return m_Elements.begin(); }

@@ -16,25 +16,7 @@ namespace KaluoEngine {
 	Application* Application::s_Instance = nullptr;
 
 	//2022-8-18 convert buffer layout datatype into opengl data type
-	static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
-	{
-		switch (type)
-		{
-		case KaluoEngine::ShaderDataType::Float: return GL_FLOAT;
-		case KaluoEngine::ShaderDataType::Float2: return GL_FLOAT;
-		case KaluoEngine::ShaderDataType::Float3: return GL_FLOAT;
-		case KaluoEngine::ShaderDataType::Float4: return GL_FLOAT;
-		case KaluoEngine::ShaderDataType::Mat3: return GL_FLOAT;
-		case KaluoEngine::ShaderDataType::Mat4: return GL_FLOAT;
-		case KaluoEngine::ShaderDataType::Int: return GL_INT;
-		case KaluoEngine::ShaderDataType::Int2: return GL_INT;
-		case KaluoEngine::ShaderDataType::Int3: return GL_INT;
-		case KaluoEngine::ShaderDataType::Int4: return GL_INT;
-		case KaluoEngine::ShaderDataType::Bool: return GL_BOOL;
-		}
-		KALUO_CORE_ASSERT(false, "Unknow shader data type to convert!");
-		return 0;
-	}
+	//2022-8-19 moved to openglvertexarray now!
 
 	Application::Application()
 	{
@@ -48,13 +30,16 @@ namespace KaluoEngine {
 
 		m_ImGuiLayer = new ImGuiLayer;
 		PushOverlay(m_ImGuiLayer);
-		
+
 		//Steps: Vertex Array + Vertex Buffer + Index Buffer
 		//Shader, use default shader
 
+		m_VertexArray.reset(VertexArray::Create());
+
 		// generate vertex array object names in here 'm_VertexArray', and bind the name with the object
-		glGenVertexArrays(1, &m_VertexArray);
-		glBindVertexArray(m_VertexArray);
+		// 2022-8-19 we are going to make it abstract move it to openglvertexarray.h
+		/*	glGenVertexArrays(1, &m_VertexArray);
+			glBindVertexArray(m_VertexArray);*/
 
 		
 		float vertices[3 * 7] = {
@@ -63,30 +48,31 @@ namespace KaluoEngine {
 			0.0f, 0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
 		};
 		
-		// generate buffer object names and bind the vertex attributes target
-		// we dont need to genearte here code by code (so thtere are three commend out lines) 
-		// since we have a openglBuffer class for generation now
-		// instead we use the unique pointer of vertex buffer and construct it
-		// glGenBuffers(1, &m_VertexBuffer);
-		// glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
-		// //upload data to gpu, static draw meaning we are not continuing refreshing
-		// glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
+		//	generate buffer object names and bind the vertex attributes target
+		//	we dont need to genearte here code by code (so thtere are three commend out lines) 
+		//	since we have a openglBuffer class for generation now
+		//	 instead we use the unique pointer of vertex buffer and construct it
+		//	glGenBuffers(1, &m_VertexBuffer);
+		//	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+		//	//upload data to gpu, static draw meaning we are not continuing refreshing
+		//	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		//	m_VertexBuffer->Bind();
+		//	constructing buffer layout class by sending bufferelements
+		//	2022-8-19: and part of vertex attribt dealing function is moved to openglvertexarray AddVertexBuffer
+		BufferLayout Elementlayout{
+			//takes in buffer elements initializer_list
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Float4, "a_Color "}
+		};
+		std::shared_ptr<VertexBuffer> m_VertexBuffer;
 		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-		//m_VertexBuffer->Bind();
-		//constructing buffer layout class by sending bufferelements
-		{
-			BufferLayout Elementlayout{
-				//takes in buffer elements initializer_list
-				{ ShaderDataType::Float3, "a_Position" },
-				{ ShaderDataType::Float4, "a_Color "}
-			};
-			m_VertexBuffer->SetLayout(Elementlayout);
-		}
-		
+		m_VertexBuffer->SetLayout(Elementlayout);
+		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+
+		/* // 2022-8-19 we are going to make it abstract
+		// this is moving to openglvertexarray class AddVertexBuffer()
 		uint32_t index = 0;
 		const auto& layout = m_VertexBuffer->GetLayout();
-
 		for (const auto& element : layout)
 		{
 			//enable the first vertex attribute
@@ -101,7 +87,7 @@ namespace KaluoEngine {
 				(const void*)element.Offset
 			);
 			index++;
-		}
+		}*/
 
 		
 		// same as buffer, we have now a interface class of index buffer class to genearte and bind for us
@@ -112,8 +98,34 @@ namespace KaluoEngine {
 		// glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
 
 		unsigned int indices[3] = { 0, 1, 2 };
+		std::shared_ptr<IndexBuffer> m_IndexBuffer;
 		m_IndexBuffer.reset(IndexBuffer::Create(indices, (sizeof(indices) / sizeof(uint32_t))));
-		
+		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+
+
+		m_SquareVA.reset(VertexArray::Create());
+
+		float SqaureVertices[3 * 4] = {
+			-0.75f, -0.75f, 0.0f, 
+			0.75f, -0.75f, 0.0f,
+			0.75f, 0.75f, 0.0f,
+			-0.75f, 0.75f, 0.0f
+		};
+
+		std::shared_ptr<VertexBuffer> SquareVB; 
+		SquareVB.reset(VertexBuffer::Create(SqaureVertices, sizeof(SqaureVertices)));
+		BufferLayout SquareVBlayout{
+			//takes in buffer elements initializer_list
+			{ ShaderDataType::Float3, "a_Position" },
+		};
+		SquareVB->SetLayout(SquareVBlayout);
+		m_SquareVA->AddVertexBuffer(SquareVB);
+
+		unsigned int SquareIndices[6] = { 0, 1, 2, 2, 3, 0};
+		std::shared_ptr<IndexBuffer>SquareIndexBuffer; 
+		SquareIndexBuffer.reset(IndexBuffer::Create(SquareIndices, (sizeof(SquareIndices) / sizeof(uint32_t))));
+		m_SquareVA->SetIndexBuffer(SquareIndexBuffer);
+
 		//source code of shader
 		std::string vertexSrc = R"(
 			#version 330 core
@@ -149,6 +161,34 @@ namespace KaluoEngine {
 		)";
 
 		m_Shader.reset(new Shader(vertexSrc, fragmentSrc));
+
+		//source code of shader
+		std::string BlueShadervertexSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) in vec3 a_Position;
+			out vec3 v_Position;
+
+			void main()
+			{
+				v_Position = a_Position;
+				gl_Position = vec4(a_Position, 1.0);	
+			}
+		)";
+
+		std::string BlueShaderfragmentSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) out vec4 color;
+			in vec4 v_Color;
+
+			void main()
+			{
+				color = vec4(0.2, 0.3, 0.8, 1.0);
+			}
+		)";
+		m_BlueShader.reset(new Shader(BlueShadervertexSrc, BlueShaderfragmentSrc));
+
 	}
 
 	Application::~Application()
@@ -208,9 +248,17 @@ namespace KaluoEngine {
 			glClearColor(0.1f, 0.1f, 0.1f, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
+			//draw square in blue
+			m_BlueShader->Bind();
+			m_SquareVA->Bind();
+			glDrawElements(GL_TRIANGLES, m_SquareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+
 			m_Shader->Bind();
-			glBindVertexArray(m_VertexArray);
-			glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
+			//2022-8-19 this is moved to openglvertex array specific funtion to bind!
+			//glBindVertexArray(m_VertexArray);
+			m_VertexArray->Bind();
+
+			glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 			//update in forward order
 			for (Layer* EachLayer : m_LayerStack)

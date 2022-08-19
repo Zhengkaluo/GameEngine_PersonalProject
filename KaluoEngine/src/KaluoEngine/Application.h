@@ -5,6 +5,7 @@
 #include "KaluoEngine/Events/ApplicationEvent.h"
 #include "KaluoEngine/LayerStack.h"
 #include "KaluoEngine/ImGui/ImGuiLayer.h"
+#include "KaluoEngine/Renderer/VertexArray.h"
 #include "KaluoEngine/Renderer/Shader.h"
 #include "KaluoEngine/Renderer/Buffer.h"
 #include "Window.h"
@@ -41,10 +42,15 @@ namespace KaluoEngine{
 		LayerStack m_LayerStack;
 
 		//for context rendering
-		unsigned int m_VertexArray;
-		std::unique_ptr<Shader> m_Shader;
-		std::unique_ptr<VertexBuffer> m_VertexBuffer;
-		std::unique_ptr<IndexBuffer> m_IndexBuffer;
+		//unsigned int m_VertexArray;
+		std::shared_ptr<Shader> m_Shader;
+		std::shared_ptr<VertexArray> m_VertexArray;
+
+		//sqaure vertex array
+		std::shared_ptr<VertexArray> m_SquareVA;
+		std::shared_ptr<Shader> m_BlueShader;
+
+
 	private:
 		//singleton application
 		static Application* s_Instance;
