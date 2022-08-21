@@ -28,6 +28,8 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 			- [idea of vertexarray class and implementation](#idea-of-vertexarray-class-and-implementation)
 			- [example of creating vertex buffer and index buffer](#example-of-creating-vertex-buffer-and-index-buffer)
 			- [example of creaeting blue shader](#example-of-creaeting-blue-shader)
+		- [[2022/8/20] renderer flow](#2022820-renderer-flow)
+			- [first form of renderer and rendererapi class](#first-form-of-renderer-and-rendererapi-class)
 
 ### [2022/8/1] (some small things)
 
@@ -702,3 +704,105 @@ m_BlueShader->Bind();
 m_SquareVA->Bind();
 glDrawElements(GL_TRIANGLES, m_SquareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 ```
+
+### [2022/8/20] renderer flow
+
+what we need to render a cube:
+
+1. renderer. vertex array, shader...
+2. camera, projection matrix, view matrix (:star:)
+3. position of the cube, transformation matrix. (:star:)
+4. surface matrial, what is it made of?
+5. environment. lights, directional light. use enviroment map, radial map...
+
+command queue. know everything before rendering.
+idealiy we want to have: (and we have it now)
+
+```c++
+//final form: Renderer::BeginScene(camera, lights, environments);
+RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+RenderCommand::Clear();
+Renderer::BeginScene();
+m_BlueShader->Bind();
+Renderer::Submit(m_SquareVA);
+m_Shader->Bind();
+Renderer::Submit(m_VertexArray);
+Renderer::EndScene();
+```
+
+we made a renderer api class and use it to setclearcolor(), clear() and drawindexed()...
+
+this mean the class Renderer is going to be:
+
+#### first form of renderer and rendererapi class
+
+```c++
+class Renderer
+{
+public:
+	static void BeginScene();//taking all scene parameter
+	static void EndScene();
+	static void Submit(const std::shared_ptr<VertexArray>& vertexArray);
+	inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
+};
+
+//where renderer api is being:
+class RendererAPI
+{
+public:
+	enum class API
+	{
+		None = 0, OpenGL = 1
+	};
+public:
+	virtual void SetClearColor(const glm::vec4& color) = 0;
+	virtual void Clear() = 0;
+	virtual void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray);
+
+	inline static API GetAPI() { return s_RendererAPI; }
+private:
+	static API s_RendererAPI;
+
+//and render command, it tells specific api to do the work
+
+class RenderCommand {
+public:
+	inline static void SetClearColor(const glm::vec4& color) 
+	{
+		s_RendererAPI->SetClearColor(color);
+	}
+	inline static void Clear()
+	{
+		s_RendererAPI->Clear();
+	}
+	inline static void DrawIndexed(const std::shared_ptr <VertexArray>& vertexArray)
+	{
+		s_RendererAPI->DrawIndexed(vertexArray);
+	}
+private:
+	static RendererAPI* s_RendererAPI;
+};
+//inside rendercommand.cpp we set
+{
+	RendererAPI* RenderCommand::s_RendererAPI = new OpenGLRendererAPI;
+}
+};
+```
+
+render command do not do multiple things. it does not bind and draw in the same time!
+this means that Renderer::Submit() it has to bind vertexarray and calls rendercommand::drawindexed. instead of drawindexed() binding the vertexarray.
+
+
+
+and the temp openglrendererapi is being
+
+```c++
+class OpenGLRendererAPI : public RendererAPI 
+{
+public:
+	virtual void SetClearColor(const glm::vec4& color) override;
+	virtual void Clear() override;
+	virtual void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray) override;
+};
+```
+

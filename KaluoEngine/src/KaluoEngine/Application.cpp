@@ -1,11 +1,14 @@
 #include "Kaluopch.h"
 #include "Application.h"
-#include "Kaluopch.h"
-//#include <GLFW/glfw3.h>
-#include <glad/glad.h>
-#include "Events/ApplicationEvent.h"
+
+//#include <glad/glad.h>
+
 #include "Log.h"
 #include "Input.h"
+
+#include "KaluoEngine/Renderer/RenderCommand.h"
+#include "KaluoEngine/Renderer/Renderer.h"
+
 using namespace std;
 
 
@@ -245,20 +248,26 @@ namespace KaluoEngine {
 
 		while (m_Running) 
 		{
-			glClearColor(0.1f, 0.1f, 0.1f, 1);
-			glClear(GL_COLOR_BUFFER_BIT);
-
+			//2022-8-21 using renderercommand to deal with specific actions now
+			//glClearColor(0.1f, 0.1f, 0.1f, 1);
+			//glClear(GL_COLOR_BUFFER_BIT);
+			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+			RenderCommand::Clear();
+			Renderer::BeginScene();
 			//draw square in blue
+			//2022-8-21 draw elements are moving to specific api to draw!
+			//Renderer::Submit do the work!
 			m_BlueShader->Bind();
-			m_SquareVA->Bind();
-			glDrawElements(GL_TRIANGLES, m_SquareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-
+			Renderer::Submit(m_SquareVA);
 			m_Shader->Bind();
-			//2022-8-19 this is moved to openglvertex array specific funtion to bind!
-			//glBindVertexArray(m_VertexArray);
-			m_VertexArray->Bind();
+			Renderer::Submit(m_VertexArray);
 
-			glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			Renderer::EndScene();
+
+			//glDrawElements(GL_TRIANGLES, m_SquareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			//2022-8-19 this is moved to openglvertex array specific funtion to bind!
+			//vertexarray->Bind() did the work!
+			//glBindVertexArray(m_VertexArray);
 
 			//update in forward order
 			for (Layer* EachLayer : m_LayerStack)

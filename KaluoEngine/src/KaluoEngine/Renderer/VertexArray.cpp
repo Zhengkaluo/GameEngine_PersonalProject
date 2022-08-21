@@ -2,7 +2,7 @@
 #include "VertexArray.h"
 
 #include "Renderer.h"
-
+#include "RendererAPI.h"
 #include "Platform/OpenGL/OpenGLVertexArray.h"
 namespace KaluoEngine{ 
 	VertexArray* VertexArray::Create() {
@@ -10,10 +10,10 @@ namespace KaluoEngine{
 		//which class type we instantiate
 		switch (Renderer::GetAPI())
 		{
-		case RendererAPI::None:
+		case RendererAPI::API::None:
 			KALUO_CORE_ASSERT(false, "None RenderAPi is not supported!");
 			return nullptr;
-		case RendererAPI::OpenGL:
+		case RendererAPI::API::OpenGL:
 			return new OpenGLVertexArray();
 
 		}
