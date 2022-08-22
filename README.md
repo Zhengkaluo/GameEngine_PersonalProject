@@ -7,7 +7,7 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 
 - [GameEngine_PersonalProject](#gameengine_personalproject)
 	- [Daily progress](#daily-progress)
-		- [[2022/8/1] (some small things)](#202281-some-small-things)
+		- [[2022/8/1-2-3] (some small things)](#202281-2-3-some-small-things)
 		- [[2022/8/5] (ImGui imported and event handle order)](#202285-imgui-imported-and-event-handle-order)
 		- [[2022/8/6] (Imgui layer and event function construction)](#202286-imgui-layer-and-event-function-construction)
 		- [[2022/8/7] (Input Polling system construction)](#202287-input-polling-system-construction)
@@ -30,8 +30,10 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 			- [example of creaeting blue shader](#example-of-creaeting-blue-shader)
 		- [[2022/8/20] renderer flow](#2022820-renderer-flow)
 			- [first form of renderer and rendererapi class](#first-form-of-renderer-and-rendererapi-class)
+		- [[2022/8/22] Camera Planning](#2022822-camera-planning)
+			- [order of equation in calculation](#order-of-equation-in-calculation)
 
-### [2022/8/1] (some small things)
+### [2022/8/1-2-3] (some small things)
 
 Entry point: starting the application from the engine and defined by the client  
 
@@ -806,3 +808,24 @@ public:
 };
 ```
 
+### [2022/8/22] Camera Planning
+
+x,y,z cooridinate and rotation. Transform.
+field/degree of the view 45, 65, 90...
+![image](https://github.com/Zhengkaluo/GameEngine_PersonalProject/blob/main/IMG/FOV40.jpg)
+![image](https://github.com/Zhengkaluo/GameEngine_PersonalProject/blob/main/IMG/FOV90.jpg)
+aspect ratio, how wide...
+Look at matrix:
+![image](https://github.com/Zhengkaluo/GameEngine_PersonalProject/blob/main/IMG/LookAtMatrix.png)
+
+take camera view matrix and invert it when the camera moves, cuz the object moved the opposite direction.
+
+#### order of equation in calculation
+
+_projection matrix*view matrix*model matrix(world matrix)*vertex position_
+
+part of camera: projection and the view, also call vp matrix
+part of object: model
+part of mesh: vertex position
+
+renderer: beginscene(camera), for VP matrix, when start rendering, vertex array and shader are (should be) binded, and supposingly it can be rendered.

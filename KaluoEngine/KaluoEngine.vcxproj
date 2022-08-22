@@ -156,6 +156,7 @@
     <ClInclude Include="src\KaluoEngine\Log.h" />
     <ClInclude Include="src\KaluoEngine\MouseButtonCodes.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\Buffer.h" />
+    <ClInclude Include="src\KaluoEngine\Renderer\Camara.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\RenderCommand.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\Renderer.h" />
