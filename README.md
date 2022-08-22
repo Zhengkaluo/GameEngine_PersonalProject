@@ -822,7 +822,7 @@ take camera view matrix and invert it when the camera moves, cuz the object move
 
 #### order of equation in calculation
 
-_projection matrix*view matrix*model matrix(world matrix)*vertex position_
+_projection matrix_ * _view matrix_ * _model matrix(world matrix)_ * _vertex position_
 
 part of camera: projection and the view, also call vp matrix
 part of object: model
