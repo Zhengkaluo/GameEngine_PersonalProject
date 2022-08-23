@@ -8,6 +8,7 @@
 #include "KaluoEngine/Renderer/VertexArray.h"
 #include "KaluoEngine/Renderer/Shader.h"
 #include "KaluoEngine/Renderer/Buffer.h"
+#include "KaluoEngine/Renderer/OrthographicCamera.h"
 #include "Window.h"
 
 namespace KaluoEngine{
@@ -50,6 +51,7 @@ namespace KaluoEngine{
 		std::shared_ptr<VertexArray> m_SquareVA;
 		std::shared_ptr<Shader> m_BlueShader;
 
+		OrthographicCamera m_Camera;
 
 	private:
 		//singleton application

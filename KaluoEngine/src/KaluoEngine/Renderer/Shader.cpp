@@ -3,6 +3,8 @@
 
 #include <glad/glad.h>
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace KaluoEngine {
 	Shader::Shader(const std::string& VertexSource, const std::string& FragmentSource)
 	{
@@ -75,29 +77,30 @@ namespace KaluoEngine {
 		// Vertex and fragment shaders are successfully compiled.
 		// Now time to link them together into a program.
 		// Get a program object.
-		m_RenderID = glCreateProgram();
+		m_RendererID = glCreateProgram();
+		GLuint program = m_RendererID;
 
 		// Attach our shaders to our program
-		glAttachShader(m_RenderID, vertexShader);
-		glAttachShader(m_RenderID, fragmentShader);
+		glAttachShader(program, vertexShader);
+		glAttachShader(program, fragmentShader);
 
 		// Link our program
-		glLinkProgram(m_RenderID);
+		glLinkProgram(program);
 
 		// Note the different functions here: glGetProgram* instead of glGetShader*.
 		GLint isLinked = 0;
-		glGetProgramiv(m_RenderID, GL_LINK_STATUS, (int*)&isLinked);
+		glGetProgramiv(program, GL_LINK_STATUS, (int*)&isLinked);
 		if (isLinked == GL_FALSE)
 		{
 			GLint maxLength = 0;
-			glGetProgramiv(m_RenderID, GL_INFO_LOG_LENGTH, &maxLength);
+			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
 
 			// The maxLength includes the NULL character
 			std::vector<GLchar> infoLog(maxLength);
-			glGetProgramInfoLog(m_RenderID, maxLength, &maxLength, &infoLog[0]);
+			glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
 
 			// We don't need the program anymore.
-			glDeleteProgram(m_RenderID);
+			glDeleteProgram(program);
 			// Don't leak shaders either.
 			glDeleteShader(vertexShader);
 			glDeleteShader(fragmentShader);
@@ -110,22 +113,33 @@ namespace KaluoEngine {
 		}
 
 		// Always detach shaders after a successful link.
-		glDetachShader(m_RenderID, vertexShader);
-		glDetachShader(m_RenderID, fragmentShader);
+		glDetachShader(program, vertexShader);
+		glDetachShader(program, fragmentShader);
 	}
 
 	Shader::~Shader()
 	{
-		glDeleteProgram(m_RenderID);
+		glDeleteProgram(m_RendererID);
 	}
 
 	void Shader::Bind() const
 	{
-		glUseProgram(m_RenderID);
+		glUseProgram(m_RendererID);
 	}
 
 	void Shader::UnBind() const
 	{
 		glUseProgram(0);
+	}
+
+	void Shader::UpLoadUniformMat4(const std::string& name, const glm::mat4& matrix)
+	{
+		//it is based on assumption that shader is already binded
+
+		//First Get the matrix location
+		GLint Location = glGetUniformLocation(m_RendererID, name.c_str());
+
+		//location, how many matrix, whether we should transpose, pointer to the value
+		glUniformMatrix4fv(Location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 }

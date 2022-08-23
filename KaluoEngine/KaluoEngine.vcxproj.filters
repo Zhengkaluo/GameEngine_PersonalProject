@@ -13,8 +13,14 @@
     <Filter Include="src\KaluoEngine\ImGui">
       <UniqueIdentifier>{B8ACB80F-2419-740A-ED0C-0C6859389672}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\KaluoEngine\Renderer">
+      <UniqueIdentifier>{74F8B133-601D-01B4-8968-E64375ECFFD1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Platform">
       <UniqueIdentifier>{21CA02E5-0D2D-9289-B6B2-CA3FA2F45D0C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Platform\OpenGL">
+      <UniqueIdentifier>{35A49437-A105-7245-2A73-B8F796D3A804}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Platform\Windows">
       <UniqueIdentifier>{5B054582-4794-CE4B-F0B2-E246DC20DFF1}</UniqueIdentifier>
@@ -87,8 +93,47 @@
     <ClInclude Include="src\KaluoEngine\MouseButtonCodes.h">
       <Filter>src\KaluoEngine</Filter>
     </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Renderer\Buffer.h">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Renderer\Camara.h">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Renderer\GraphicsContext.h">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Renderer\OrthographicCamera.h">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Renderer\RenderCommand.h">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Renderer\Renderer.h">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Renderer\RendererAPI.h">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Renderer\Shader.h">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Renderer\VertexArray.h">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Kaluopch.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
+      <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Windows\WindowsInput.h">
       <Filter>src\Platform\Windows</Filter>
@@ -1344,18 +1389,6 @@
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp">
       <Filter>vendor\glm\glm</Filter>
     </ClInclude>
-    <ClInclude Include="src\KaluoEngine\Renderer\GraphicsContext.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
-    <ClInclude Include="src\KaluoEngine\Renderer\Shader.h" />
-    <ClInclude Include="src\KaluoEngine\Renderer\Buffer.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
-    <ClInclude Include="src\KaluoEngine\Renderer\Renderer.h" />
-    <ClInclude Include="src\KaluoEngine\Renderer\VertexArray.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
-    <ClInclude Include="src\KaluoEngine\Renderer\RendererAPI.h" />
-    <ClInclude Include="src\KaluoEngine\Renderer\RenderCommand.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
-    <ClInclude Include="src\KaluoEngine\Renderer\Camara.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\KaluoEngine\Application.cpp">
@@ -1376,8 +1409,41 @@
     <ClCompile Include="src\KaluoEngine\Log.cpp">
       <Filter>src\KaluoEngine</Filter>
     </ClCompile>
+    <ClCompile Include="src\KaluoEngine\Renderer\Buffer.cpp">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KaluoEngine\Renderer\OrthographicCamera.cpp">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KaluoEngine\Renderer\RenderCommand.cpp">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KaluoEngine\Renderer\Renderer.cpp">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KaluoEngine\Renderer\RendererAPI.cpp">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KaluoEngine\Renderer\Shader.cpp">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KaluoEngine\Renderer\VertexArray.cpp">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Kaluopch.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
       <Filter>src\Platform\Windows</Filter>
@@ -1385,15 +1451,5 @@
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
       <Filter>src\Platform\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
-    <ClCompile Include="src\KaluoEngine\Renderer\Shader.cpp" />
-    <ClCompile Include="src\KaluoEngine\Renderer\Buffer.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
-    <ClCompile Include="src\KaluoEngine\Renderer\Renderer.cpp" />
-    <ClCompile Include="src\KaluoEngine\Renderer\VertexArray.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
-    <ClCompile Include="src\KaluoEngine\Renderer\RendererAPI.cpp" />
-    <ClCompile Include="src\KaluoEngine\Renderer\RenderCommand.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
   </ItemGroup>
 </Project>

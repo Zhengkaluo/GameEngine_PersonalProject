@@ -17,6 +17,7 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 		- [[2022/8/13] (render context)](#2022813-render-context)
 		- [[2022/8/14] some first context in the engine](#2022814-some-first-context-in-the-engine)
 		- [[2022/8/15] shaders](#2022815-shaders)
+			- [vertex shader code example](#vertex-shader-code-example)
 		- [[2022/8/15] Rendering API Abstraction](#2022815-rendering-api-abstraction)
 			- [abstract class of buffer](#abstract-class-of-buffer)
 			- [for specific opengl buffer api:](#for-specific-opengl-buffer-api)
@@ -32,6 +33,8 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 			- [first form of renderer and rendererapi class](#first-form-of-renderer-and-rendererapi-class)
 		- [[2022/8/22] Camera Planning](#2022822-camera-planning)
 			- [order of equation in calculation](#order-of-equation-in-calculation)
+		- [[2022/8/23] Orthographic Camera](#2022823-orthographic-camera)
+			- [Projection matrix in the vertex shader for doing matrix maltiplication](#projection-matrix-in-the-vertex-shader-for-doing-matrix-maltiplication)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -305,6 +308,8 @@ and do the linking and check if linking fails. and after all checks succeed, we 
 glDetachShader(program, vertexShader);
 glDetachShader(program, fragmentShader);
 ```
+
+#### vertex shader code example
 
 inside application.cpp we construct two shaders: and its using varying position for color settings(fragment shader)
 
@@ -829,3 +834,82 @@ part of object: model
 part of mesh: vertex position
 
 renderer: beginscene(camera), for VP matrix, when start rendering, vertex array and shader are (should be) binded, and supposingly it can be rendered.
+
+### [2022/8/23] Orthographic Camera
+
+#### Projection matrix in the vertex shader for doing matrix maltiplication
+
+inside our the former code of vertex shader
+
+[vertex shader (old)](#vertex-shader-code-example)
+
+we added an new uniform variable of projection matrix:
+
+```c++
+std::string vertexSrc = R"(
+#version 330 core
+
+layout(location = 0) in vec3 a_Position;
+layout(location = 1) in vec4 a_Color;
+uniform mat4 u_ViewProjectionMatrix;
+out vec3 v_Position;
+out vec4 v_Color;
+
+void main()
+{
+	v_Position = a_Position;
+	v_Color  = a_Color;
+	//calculate viewprojection * vertex position
+	gl_Position = u_ViewProjectionMatrix * vec4(a_Position, 1.0);	
+}
+)";
+// and inside run() matrix we have to upload the projection matrix 
+run(){
+	...
+	m_BlueShader->Bind();
+	//2022-8-23 uploade uniform matrix
+	m_BlueShader->UpLoadUniformMat4("u_ViewProjectionMatrix", m_Camera.GetProjectionMatrix());
+	Renderer::Submit(m_SquareVA);
+	m_Shader->Bind();
+	m_Shader->UpLoadUniformMat4("u_ViewProjectionMatrix", m_Camera.GetProjectionMatrix());
+	Renderer::Submit(m_VertexArray);
+	...
+}
+```
+
+inside renderer class, we are uploading the camera infomation (projectionmatrix) when begin scene. and storing the matrix in the struct scene data.
+
+```c++
+void Renderer::BeginScene(OrthographicCamera& camera)
+{
+	//not get projectionmatrix!!!!!!
+	m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+}
+
+struct SceneData 
+{
+	glm::mat4 ViewProjectionMatrix;
+};
+```
+
+OpenGL Uniform variable:
+
+---
+**Uniform Variable in OpenGL**
+
+A uniform is a global Shader variable declared with the "uniform" storage qualifier. These act as parameters that the user of a shader program can pass to that program. Their values are stored in a program object. 
+
+---
+
+so inside shader we would have to uploade the uniform matrix:
+
+```c++
+void Shader::UpLoadUniformMat4(const std::string& name, const glm::mat4& matrix)
+{
+	//it is based on assumption that shader is already binded
+	//First Get the matrix location
+	GLint Location = glGetUniformLocation(m_RenderID, name.c_str());
+	//location, how many matrix, whether we should transpose, pointer to the value
+	glUniformMatrix4fv(Location, 1, GL_FALSE, glm::value_ptr(matrix));
+}
+```

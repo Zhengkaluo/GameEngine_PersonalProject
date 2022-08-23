@@ -9,6 +9,8 @@
 #include "KaluoEngine/Renderer/RenderCommand.h"
 #include "KaluoEngine/Renderer/Renderer.h"
 
+#include "KaluoEngine/Renderer/OrthographicCamera.h"
+
 using namespace std;
 
 
@@ -22,6 +24,7 @@ namespace KaluoEngine {
 	//2022-8-19 moved to openglvertexarray now!
 
 	Application::Application()
+		: m_Camera(-1.6f, 1.6f, -0.9f, 0.9f) 
 	{
 		KALUO_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
@@ -130,21 +133,23 @@ namespace KaluoEngine {
 		m_SquareVA->SetIndexBuffer(SquareIndexBuffer);
 
 		//source code of shader
+		//2022-8-23 adding view projeciton matrix
 		std::string vertexSrc = R"(
 			#version 330 core
 			
 			layout(location = 0) in vec3 a_Position;
-			//varying variable 
+			layout(location = 1) in vec4 a_Color;
+	
+			uniform mat4 u_ViewProjection;
+
 			out vec3 v_Position;
 			out vec4 v_Color;
-			//color
-			layout(location = 1) in vec4 a_Color;		
-
+			
 			void main()
 			{
 				v_Position = a_Position;
 				v_Color  = a_Color;
-				gl_Position = vec4(a_Position, 1.0);	
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);	
 			}
 		)";
 
@@ -171,11 +176,13 @@ namespace KaluoEngine {
 			
 			layout(location = 0) in vec3 a_Position;
 			out vec3 v_Position;
+			
+			uniform mat4 u_ViewProjection;			
 
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = vec4(a_Position, 1.0);	
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);	
 			}
 		)";
 
@@ -253,14 +260,21 @@ namespace KaluoEngine {
 			//glClear(GL_COLOR_BUFFER_BIT);
 			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 			RenderCommand::Clear();
-			Renderer::BeginScene();
+
+			m_Camera.SetPosition({ 0.5f, 0.5f, 0.0f });
+			m_Camera.SetRotation(45.0f);
+
+			Renderer::BeginScene(m_Camera);
 			//draw square in blue
 			//2022-8-21 draw elements are moving to specific api to draw!
 			//Renderer::Submit do the work!
-			m_BlueShader->Bind();
-			Renderer::Submit(m_SquareVA);
-			m_Shader->Bind();
-			Renderer::Submit(m_VertexArray);
+			//m_BlueShader->Bind();
+			//2022-8-23 uploade uniform matrix and moved UpLoadUniformMat4() to renderer to handle
+			//m_BlueShader->UpLoadUniformMat4("u_ViewProjection", m_Camera.GetProjectionMatrix());
+			Renderer::Submit(m_BlueShader, m_SquareVA);
+			//m_Shader->Bind();
+			//m_Shader->UpLoadUniformMat4("u_ViewProjection", m_Camera.GetProjectionMatrix());
+			Renderer::Submit(m_Shader, m_VertexArray);
 
 			Renderer::EndScene();
 
