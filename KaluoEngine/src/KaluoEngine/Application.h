@@ -5,10 +5,6 @@
 #include "KaluoEngine/Events/ApplicationEvent.h"
 #include "KaluoEngine/LayerStack.h"
 #include "KaluoEngine/ImGui/ImGuiLayer.h"
-#include "KaluoEngine/Renderer/VertexArray.h"
-#include "KaluoEngine/Renderer/Shader.h"
-#include "KaluoEngine/Renderer/Buffer.h"
-#include "KaluoEngine/Renderer/OrthographicCamera.h"
 #include "Window.h"
 
 namespace KaluoEngine{
@@ -41,17 +37,6 @@ namespace KaluoEngine{
 		bool m_Running = true;
 
 		LayerStack m_LayerStack;
-
-		//for context rendering
-		//unsigned int m_VertexArray;
-		std::shared_ptr<Shader> m_Shader;
-		std::shared_ptr<VertexArray> m_VertexArray;
-
-		//sqaure vertex array
-		std::shared_ptr<VertexArray> m_SquareVA;
-		std::shared_ptr<Shader> m_BlueShader;
-
-		OrthographicCamera m_Camera;
 
 	private:
 		//singleton application

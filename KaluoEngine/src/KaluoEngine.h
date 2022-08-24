@@ -10,6 +10,18 @@
 
 #include "KaluoEngine/ImGui/ImGuiLayer.h"
 
+
+//-----REnderer-----
+#include "KaluoEngine/Renderer/Renderer.h"
+#include "KaluoEngine/Renderer/RenderCommand.h"
+
+#include "KaluoEngine/Renderer/Buffer.h"
+#include "KaluoEngine/Renderer/Shader.h"
+#include "KaluoEngine/Renderer/VertexArray.h"
+
+#include "KaluoEngine/Renderer/OrthographicCamera.h"
+//--------
+
 //---Entry point------
 
 #include "KaluoEngine/EntryPoint.h"
