@@ -38,6 +38,7 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 		- [[2022/8/24] moving some renderer codes into client, add camera movement](#2022824-moving-some-renderer-codes-into-client-add-camera-movement)
 			- [old codes of renderer](#old-codes-of-renderer)
 			- [moving camera inside application](#moving-camera-inside-application)
+		- [[2022-8-25] time steps, delta time](#2022-8-25-time-steps-delta-time)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -1125,6 +1126,7 @@ bool OnKeyPressedEvent(KaluoEngine::KeyPressedEvent& event)
 ```
 
 instead we need to use the poll system in the ondate and later bind it with delta time system
+(done in 8-25)
 
 ```c++
 void OnUpdate() override
@@ -1145,5 +1147,55 @@ if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_A))
 else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_D))
 	m_CameraRotation -= m_CameraRotateSpeed;
 ...
+}
+```
+
+### [2022-8-25] time steps, delta time
+
+goal: create time steps so that the camera moves the same speed no matter what frame rate
+
+essential: how long last frame took? sec/frame. 60 fps -> Deltatime = 0.016. 30 fps -> 0.033...
+
+OnUpdate() function will take the delta time. if we want to move from left to right in 1 sec.
+60fps, 30fps should rendering in different rate. 
+
+for example in an turning function, we would like to have it like:
+Rate * BaseTurnRate * DeltaTime. as rate represent the force of the joycon.
+
+it is now calculated as:
+
+```c++
+while (m_Running) 
+{
+	//2022-8-26 Delta time added
+	float time = (float)glfwGetTime(); // Platform：:：GetTime
+	TimeStep timestep = time - m_LastFrameTime;
+	m_LastFrameTime = time;
+...
+}
+//for on update function it takes deltatime function now
+virtual void OnUpdate(TimeStep timestep) {}
+//now for camera in sandebox:
+void OnUpdate(KaluoEngine::TimeStep timestep) override
+{
+//2022-8-26 getting timesteps which calculated in application run function
+KALUO_TRACE("DeltaTIme {0}, {1}ms", timestep.GetSeconds(), timestep.GetMillseconds));
+//operator casting time step into a float
+float DeltaTime = timestep;
+//2022-8-24 using polling system to move the camera
+if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_LEFT))
+	//moving camera to left
+	m_CameraPosition.x -= m_CameraMoveSpeed * DeltaTime;
+else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_RIGHT))
+	m_CameraPosition.x += m_CameraMoveSpeed * DeltaTime;
+else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_UP))
+	m_CameraPosition.y += m_CameraMoveSpeed * DeltaTime;
+else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_DOWN))
+	m_CameraPosition.y -= m_CameraMoveSpeed * DeltaTime;
+
+if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_A))
+	m_CameraRotation += m_CameraRotateSpeed * DeltaTime;
+else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_D))
+	m_CameraRotation -= m_CameraRotateSpeed * DeltaTime;
 }
 ```

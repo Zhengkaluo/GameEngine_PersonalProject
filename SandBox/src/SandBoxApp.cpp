@@ -124,23 +124,28 @@ public:
 		m_BlueShader.reset(new KaluoEngine::Shader(BlueShadervertexSrc, BlueShaderfragmentSrc));
 	}
 
-	void OnUpdate() override
+	void OnUpdate(KaluoEngine::TimeStep timestep) override
 	{
+		//2022-8-26 getting timesteps which calculated in application run function
+		KALUO_TRACE("DeltaTIme {0}, {1}ms", timestep.GetSeconds(), timestep.GetMillseconds());
+		//operator casting time step into a float
+		float DeltaTime = timestep;
+
 		//2022-8-24 using polling system to move the camera
 		if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_LEFT))
 			//moving camera to left
-			m_CameraPosition.x -= m_CameraMoveSpeed;
+			m_CameraPosition.x -= m_CameraMoveSpeed * DeltaTime;
 		else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_RIGHT))
-			m_CameraPosition.x += m_CameraMoveSpeed;
+			m_CameraPosition.x += m_CameraMoveSpeed * DeltaTime;
 		else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_UP))
-			m_CameraPosition.y += m_CameraMoveSpeed;
+			m_CameraPosition.y += m_CameraMoveSpeed * DeltaTime;
 		else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_DOWN))
-			m_CameraPosition.y -= m_CameraMoveSpeed;
+			m_CameraPosition.y -= m_CameraMoveSpeed * DeltaTime;
 		
 		if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_A))
-			m_CameraRotation += m_CameraRotateSpeed;
+			m_CameraRotation += m_CameraRotateSpeed * DeltaTime;
 		else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_D))
-			m_CameraRotation -= m_CameraRotateSpeed;
+			m_CameraRotation -= m_CameraRotateSpeed * DeltaTime;
 
 
 		KaluoEngine::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
@@ -201,8 +206,9 @@ private:
 	glm::vec3 m_CameraPosition;
 	float m_CameraRotation;
 
-	float m_CameraMoveSpeed = 0.02f;
-	float m_CameraRotateSpeed = 0.07f;
+	//in a second moved 1.3f unit and 180 degree
+	float m_CameraMoveSpeed = 1.3f;
+	float m_CameraRotateSpeed = 180.0f;
 
 
 };

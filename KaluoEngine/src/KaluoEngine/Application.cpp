@@ -2,6 +2,7 @@
 #include "Application.h"
 
 //#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include "Log.h"
 #include "Input.h"
@@ -32,6 +33,9 @@ namespace KaluoEngine {
 		//set event call back function
 		//event call back go in o windowData--EventCallbackFn
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		//2022-8-26 some timesteps check where this 
+		//sets glfwSwapInterval into 0 and it check if delta time works
+		//m_Window->SetVSync(false);
 
 		m_ImGuiLayer = new ImGuiLayer;
 		PushOverlay(m_ImGuiLayer);
@@ -78,11 +82,16 @@ namespace KaluoEngine {
 	{
 		while (m_Running) 
 		{
+			//2022-8-26 Delta time added
+			float time = (float)glfwGetTime(); // Platform：:：GetTime
+			TimeStep timestep = time - m_LastFrameTime;
+			m_LastFrameTime = time;
+
 			//2022-8-24 moving the whole rendering details into sandbox(client)
 
 			//update in forward order
 			for (Layer* EachLayer : m_LayerStack)
-				EachLayer->OnUpdate();
+				EachLayer->OnUpdate(timestep);
 
 			m_ImGuiLayer->Begin();
 			for (Layer* EachLayer : m_LayerStack)

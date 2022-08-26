@@ -143,6 +143,7 @@
     <ClInclude Include="src\KaluoEngine.h" />
     <ClInclude Include="src\KaluoEngine\Application.h" />
     <ClInclude Include="src\KaluoEngine\Core.h" />
+    <ClInclude Include="src\KaluoEngine\Core\TimeStep.h" />
     <ClInclude Include="src\KaluoEngine\EntryPoint.h" />
     <ClInclude Include="src\KaluoEngine\Events\ApplicationEvent.h" />
     <ClInclude Include="src\KaluoEngine\Events\Event.h" />

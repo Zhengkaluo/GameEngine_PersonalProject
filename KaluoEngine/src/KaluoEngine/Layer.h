@@ -1,5 +1,6 @@
 #pragma once
 #include "KaluoEngine/Core.h"
+#include "KaluoEngine/Core/TimeStep.h"
 #include "KaluoEngine/Events/Event.h"
 
 namespace KaluoEngine{
@@ -16,7 +17,7 @@ namespace KaluoEngine{
 
 		virtual void OnImGuiRender() {};
 
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(TimeStep timestep) {}
 		virtual void OnEvent(Event& event) {}
 
 
