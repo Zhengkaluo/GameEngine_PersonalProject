@@ -39,6 +39,7 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 			- [old codes of renderer](#old-codes-of-renderer)
 			- [moving camera inside application](#moving-camera-inside-application)
 		- [[2022-8-25] time steps, delta time](#2022-8-25-time-steps-delta-time)
+		- [[2022-8-28]Transform](#2022-8-28transform)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -1197,5 +1198,28 @@ if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_A))
 	m_CameraRotation += m_CameraRotateSpeed * DeltaTime;
 else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_D))
 	m_CameraRotation -= m_CameraRotateSpeed * DeltaTime;
+}
+```
+
+### [2022-8-28]Transform
+per mesh. when submiting in the renderer, it takes in as parameter for each mesh.
+if 2d when do not need a a material transfrom, but in 3d we need.
+
+and the model matrix (transofm matrix) is now added into render submit function
+- [order of equation in calculation](#order-of-equation-in-calculation)
+
+
+```c++
+static void Submit(
+	const std::shared_ptr<Shader>& shader,
+	const std::shared_ptr<VertexArray>& vertexArray,
+	const glm::mat4& transformMatrix = glm::mat4(1.0f)
+);
+
+//how to submit in example
+{
+glm::vec3 pos(x, y, 0.0f);
+glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos);
+KaluoEngine::Renderer::Submit(m_BlueShader, m_SquareVA, transform);
 }
 ```
