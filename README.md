@@ -39,7 +39,9 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 			- [old codes of renderer](#old-codes-of-renderer)
 			- [moving camera inside application](#moving-camera-inside-application)
 		- [[2022-8-25] time steps, delta time](#2022-8-25-time-steps-delta-time)
-		- [[2022-8-28]Transform](#2022-8-28transform)
+		- [[2022-8-28]Transform and Material](#2022-8-28transform-and-material)
+			- [Transform](#transform)
+			- [Material](#material)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -1201,7 +1203,9 @@ else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_D))
 }
 ```
 
-### [2022-8-28]Transform
+### [2022-8-28]Transform and Material
+
+#### Transform 
 per mesh. when submiting in the renderer, it takes in as parameter for each mesh.
 if 2d when do not need a a material transfrom, but in 3d we need.
 
@@ -1216,10 +1220,29 @@ static void Submit(
 	const glm::mat4& transformMatrix = glm::mat4(1.0f)
 );
 
-//how to submit in example
+//how to use submit in example
 {
 glm::vec3 pos(x, y, 0.0f);
 glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos);
 KaluoEngine::Renderer::Submit(m_BlueShader, m_SquareVA, transform);
 }
 ```
+
+#### Material
+now we have vertex position, model position (transform)
+material makes shader flexible. feed data into shader and it comes out with detials of texture/color/rough-smooth.
+material is a bunch of material and a shader.
+so we defintely need a material class. How to define the data?
+
+some goals:
+
+```c++
+KaluoEngine::MaterialRef material = new KaluoEngine::Material(m_FlatColorShader);
+KaluoEngine::MaterialInstanceRef materialinstance = new KaluoEngine::MaterialInstance(material);
+
+materialinstance->Set("uColor", RedColor);
+materialinstance->Set("u+AlbedoMap", texture);
+```
+
+render sorting. red render with reds, green with greens... 
+bind red material, render. bind green, render.
