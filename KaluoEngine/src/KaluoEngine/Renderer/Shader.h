@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include <glm/glm.hpp>
 
 namespace KaluoEngine {
 	class Shader
@@ -9,16 +8,17 @@ namespace KaluoEngine {
 		//from opengl wiki we know it takes two parameters of a vertex/fragment shader
 		//std::string vertexSource = // Get source code for vertex shader.
 		// std::string fragmentSource = // Get source code for fragment shader.
-		Shader(const std::string& VertexSource, const std::string& FragmentSource);
-		~Shader();
+		// 2022-8-29 this class is made abstract now
+		// Shader(const std::string& VertexSource, const std::string& FragmentSource);
+		virtual ~Shader() = default;
 
-		void Bind() const;
-		void UnBind() const;
+		virtual void Bind() const = 0;
+		virtual void UnBind() const = 0;
 
-		void UpLoadUniformMat4(const std::string& name, const glm::mat4& matrix);
-	
-	private:
-		uint32_t m_RendererID;
+		//2022-8-29 abstract function for specfic class implementation (later)
+		//virtual void UploadUniformBuffer() = 0;
+
+		static Shader* Create(const std::string& VertexSource, const std::string& FragmentSource);
 
 	};
 }

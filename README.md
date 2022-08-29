@@ -42,6 +42,7 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 		- [[2022-8-28]Transform and Material](#2022-8-28transform-and-material)
 			- [Transform](#transform)
 			- [Material](#material)
+		- [[2022-8-29] Shader Class Abstraction](#2022-8-29-shader-class-abstraction)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -1205,13 +1206,14 @@ else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_D))
 
 ### [2022-8-28]Transform and Material
 
-#### Transform 
+#### Transform
+
 per mesh. when submiting in the renderer, it takes in as parameter for each mesh.
 if 2d when do not need a a material transfrom, but in 3d we need.
 
 and the model matrix (transofm matrix) is now added into render submit function
-- [order of equation in calculation](#order-of-equation-in-calculation)
 
+- [order of equation in calculation](#order-of-equation-in-calculation)
 
 ```c++
 static void Submit(
@@ -1229,6 +1231,7 @@ KaluoEngine::Renderer::Submit(m_BlueShader, m_SquareVA, transform);
 ```
 
 #### Material
+
 now we have vertex position, model position (transform)
 material makes shader flexible. feed data into shader and it comes out with detials of texture/color/rough-smooth.
 material is a bunch of material and a shader.
@@ -1246,3 +1249,51 @@ materialinstance->Set("u+AlbedoMap", texture);
 
 render sorting. red render with reds, green with greens... 
 bind red material, render. bind green, render.
+
+### [2022-8-29] Shader Class Abstraction
+
+move everything from shader class into openglshader
+```c++
+
+namespace KaluoEngine {
+	class OpenGLShader : public Shader
+	{
+	public:
+		//from opengl wiki we know it takes two parameters of a vertex/fragment shader
+		//std::string vertexSource = // Get source code for vertex shader.
+		// std::string fragmentSource = // Get source code for fragment shader.
+		OpenGLShader(const std::string& VertexSource, const std::string& FragmentSource);
+		~OpenGLShader();
+
+		virtual void Bind() const override;
+		virtual void UnBind() const override;
+
+		void UploadUniformInt(const std::string& name, int value);
+
+		void UploadUniformFloat(const std::string& name, float values);
+		void UploadUniformFloat2(const std::string& name, const glm::vec2& values);
+		void UploadUniformFloat3(const std::string& name, const glm::vec3& values);
+		void UploadUniformFloat4(const std::string& name, const glm::vec4& values);
+		
+		void UploadUniformMat3(const std::string& name, const glm::mat3& values);
+		void UpLoadUniformMat4(const std::string& name, const glm::mat4& matrix);
+
+	private:
+		uint32_t m_RendererID;
+
+	};
+}
+```
+
+inside sandboxapp we could dynamically change the color pointer now
+
+```c++
+virtual void OnImGuiRender() override
+{
+	ImGui::Begin("Kaluo Engine Info:");
+	ImGui::Text("Hello World");
+	//2022-8-29 
+	ImGui::ColorEdit3("Square Color", glm::value_ptr(m_SquareColor));
+	ImGui::End();
+}
+``

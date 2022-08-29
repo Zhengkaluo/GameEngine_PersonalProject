@@ -2,6 +2,8 @@
 #include "Renderer.h"
 #include "RenderCommand.h"
 
+#include "Platform/OpenGL/OpenGLShader.h"
+
 namespace KaluoEngine {
 	
  	Renderer::SceneData* Renderer::m_SceneData = new Renderer::SceneData;
@@ -20,10 +22,14 @@ namespace KaluoEngine {
 	{
 		//2022-8-23 bind the shader for the camera and upload camera
 		shader->Bind();
+
 		//2022-8-23 this only need to do once per scene, will be changed later
-		shader->UpLoadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
+		//shader->UpLoadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
+		//2022-8-29 dynamic cast the upper shader into opengl shader and call the function
+		std::dynamic_pointer_cast<OpenGLShader>(shader) ->UpLoadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
+		
 		//2022-8-28 upload the transform matrix of model  
-		shader->UpLoadUniformMat4("u_Transform", transformMatrix);
+		std::dynamic_pointer_cast<OpenGLShader>(shader) -> UpLoadUniformMat4("u_Transform", transformMatrix);
 
 		vertexArray->Bind();
 		//submit into rendercommand queue

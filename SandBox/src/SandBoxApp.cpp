@@ -1,16 +1,20 @@
 
 //#include "../KaluoEngine/KaluoEngine.h"
 #include <KaluoEngine.h>
-//#include <stdio.h>
+
+#include "Platform/OpenGL/OpenGLShader.h"
+
 #include "imgui/imgui.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 
 class ExampleLayer : public KaluoEngine::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Example Layer"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f, 0.0f, 0.0f), m_CameraRotation(0.f), m_SqaurePosition(0.f)
+		: Layer("Example Layer"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f, 0.0f, 0.0f), m_CameraRotation(0.f)
 	{
 		//Steps: Vertex Array + Vertex Buffer + Index Buffer
 		//Shader, use default shader
@@ -36,7 +40,6 @@ public:
 		std::shared_ptr<KaluoEngine::IndexBuffer> m_IndexBuffer;
 		m_IndexBuffer.reset(KaluoEngine::IndexBuffer::Create(indices, (sizeof(indices) / sizeof(uint32_t))));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
-
 
 		m_SquareVA.reset(KaluoEngine::VertexArray::Create());
 
@@ -95,8 +98,8 @@ public:
 
 			}
 		)";
-
-		m_Shader.reset(new KaluoEngine::Shader(vertexSrc, fragmentSrc));
+		//2022-8-29 change to abstract class creation
+		m_Shader.reset(KaluoEngine::Shader::Create(vertexSrc, fragmentSrc));
 
 		//source code of shader
 		std::string BlueShadervertexSrc = R"(
@@ -115,24 +118,27 @@ public:
 			}
 		)";
 
-		std::string BlueShaderfragmentSrc = R"(
+		std::string FlatColorShaderFragmentSrc = R"(
 			#version 330 core
 			
 			layout(location = 0) out vec4 color;
 			in vec4 v_Color;
 
+			uniform vec3 u_Color;
+
 			void main()
 			{
-				color = vec4(0.2, 0.3, 0.8, 1.0);
+				color =vec4(u_Color, 1.0f);
 			}
 		)";
-		m_BlueShader.reset(new KaluoEngine::Shader(BlueShadervertexSrc, BlueShaderfragmentSrc));
+		//2022-8-29 change to abstract class creation
+		m_FlatColorShader.reset(KaluoEngine::Shader::Create(BlueShadervertexSrc, FlatColorShaderFragmentSrc));
 	}
 
 	void OnUpdate(KaluoEngine::TimeStep timestep) override
 	{
 		//2022-8-26 getting timesteps which calculated in application run function
-		KALUO_TRACE("DeltaTIme {0}, {1}ms", timestep.GetSeconds(), timestep.GetMillseconds());
+		//KALUO_TRACE("DeltaTIme {0}, {1}ms", timestep.GetSeconds(), timestep.GetMillseconds());
 		//operator casting time step into a float
 		float DeltaTime = timestep;
 
@@ -165,6 +171,19 @@ public:
 		//10% scale matrix
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
+		//some goals of material system
+		/*
+		KaluoEngine::MaterialRef material = new KaluoEngine::Material(m_FlatColorShader);
+		KaluoEngine::MaterialInstanceRef materialinstance = new KaluoEngine::MaterialInstance(material);
+
+		materialinstance->Set("uColor", RedColor);
+		materialinstance->Set("u+AlbedoMap", texture);
+		*/
+
+		//2022-8-29 temporary cast the shader into openglshader and bind it
+		std::dynamic_pointer_cast<KaluoEngine::OpenGLShader>(m_FlatColorShader)->Bind();
+		std::dynamic_pointer_cast<KaluoEngine::OpenGLShader>(m_FlatColorShader)->UploadUniformFloat3("u_Color", m_SquareColor);
+
 		//render 25 different small sqaure for testing tranform matrix
 		for (int y = 0; y < 5; y++) 
 		{
@@ -172,20 +191,24 @@ public:
 			{
 				glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				KaluoEngine::Renderer::Submit(m_BlueShader, m_SquareVA, transform);
+				KaluoEngine::Renderer::Submit(m_FlatColorShader, m_SquareVA, transform);
 			}
 		}
 		
-		//KaluoEngine::Renderer::Submit(m_Shader, m_VertexArray);
+		KaluoEngine::Renderer::Submit(m_Shader, m_VertexArray);
 
 		KaluoEngine::Renderer::EndScene();
 	}
 
 	virtual void OnImGuiRender() override
 	{
-		/*ImGui::Begin("Kaluo Engine Info:");
+		ImGui::Begin("Kaluo Engine Info:");
 		ImGui::Text("Hello World");
-		ImGui::End();*/
+
+		//2022-8-29 
+		ImGui::ColorEdit3("Square Color", glm::value_ptr(m_SquareColor));
+
+		ImGui::End();
 
 	}
 
@@ -219,7 +242,7 @@ private:
 
 	//sqaure vertex array
 	std::shared_ptr<KaluoEngine::VertexArray> m_SquareVA;
-	std::shared_ptr<KaluoEngine::Shader> m_BlueShader;
+	std::shared_ptr<KaluoEngine::Shader> m_FlatColorShader;
 
 	KaluoEngine::OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition;
@@ -228,6 +251,8 @@ private:
 	//in a second moved 1.3f unit and 180 degree
 	float m_CameraMoveSpeed = 1.3f;
 	float m_CameraRotateSpeed = 180.0f;
+
+	glm::vec3 m_SquareColor = { 0.2f, 0.3f, 0.8f };
 };
 
 class Sandbox : public KaluoEngine::Application
