@@ -43,6 +43,8 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 			- [Transform](#transform)
 			- [Material](#material)
 		- [[2022-8-29] Shader Class Abstraction](#2022-8-29-shader-class-abstraction)
+		- [[2022-8-30] Smart pointer, refs and some encapsulations](#2022-8-30-smart-pointer-refs-and-some-encapsulations)
+			- [own type of shared ptr - Engine Ref, Scope](#own-type-of-shared-ptr---engine-ref-scope)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -1295,5 +1297,27 @@ virtual void OnImGuiRender() override
 	//2022-8-29 
 	ImGui::ColorEdit3("Square Color", glm::value_ptr(m_SquareColor));
 	ImGui::End();
+}
+```
+
+### [2022-8-30] Smart pointer, refs and some encapsulations
+
+in the future. have context of entire scene, before rendering. because we need sorting, coloring, for improving performance.
+shader objects are held the reference, vertex array as well.
+multi-threads
+shared_ptr (thread safety), unique_ptr 
+< https://www.cyhone.com/articles/right-way-to-use-cpp-smart-pointer/ >
+
+#### own type of shared ptr - Engine Ref, Scope
+
+Scope: Engine scope
+Ref: Shared ptr
+
+```c++
+namespace KaluoEngine { 
+	template <typename T>
+	using Scope = std::unique_ptr<T>;
+	template <typename T>
+	using Ref = std::shared_ptr<T>;
 }
 ``

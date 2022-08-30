@@ -18,7 +18,7 @@ namespace KaluoEngine {
 
 	}
 
-	void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transformMatrix)
+	void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transformMatrix)
 	{
 		//2022-8-23 bind the shader for the camera and upload camera
 		shader->Bind();

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #ifdef KALUO_PLATFORM_WINDOWS
 #if KALUO_DYNAMIC_LINK
 	#ifdef KALUO_BUILD_DLL
@@ -36,3 +38,13 @@
 //fn example Applilcation::onxxxevent
 #define KALUO_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 //#define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
+
+namespace KaluoEngine { 
+	
+	template <typename T>
+	using Scope = std::unique_ptr<T>;
+
+	template <typename T>
+	using Ref = std::shared_ptr<T>;
+
+}

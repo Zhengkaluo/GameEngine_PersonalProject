@@ -31,13 +31,13 @@ public:
 			{ KaluoEngine::ShaderDataType::Float3, "a_Position" },
 			{ KaluoEngine::ShaderDataType::Float4, "a_Color "}
 		};
-		std::shared_ptr<KaluoEngine::VertexBuffer> m_VertexBuffer;
+		KaluoEngine::Ref<KaluoEngine::VertexBuffer> m_VertexBuffer;
 		m_VertexBuffer.reset(KaluoEngine::VertexBuffer::Create(vertices, sizeof(vertices)));
 		m_VertexBuffer->SetLayout(Elementlayout);
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
 		unsigned int indices[3] = { 0, 1, 2 };
-		std::shared_ptr<KaluoEngine::IndexBuffer> m_IndexBuffer;
+		KaluoEngine::Ref<KaluoEngine::IndexBuffer> m_IndexBuffer;
 		m_IndexBuffer.reset(KaluoEngine::IndexBuffer::Create(indices, (sizeof(indices) / sizeof(uint32_t))));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
@@ -50,7 +50,7 @@ public:
 			-0.5f, 0.5f, 0.0f
 		};
 
-		std::shared_ptr<KaluoEngine::VertexBuffer> SquareVB;
+		KaluoEngine::Ref<KaluoEngine::VertexBuffer> SquareVB;
 		SquareVB.reset(KaluoEngine::VertexBuffer::Create(SqaureVertices, sizeof(SqaureVertices)));
 		KaluoEngine::BufferLayout SquareVBlayout{
 			//takes in buffer elements initializer_list
@@ -60,7 +60,7 @@ public:
 		m_SquareVA->AddVertexBuffer(SquareVB);
 
 		unsigned int SquareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-		std::shared_ptr<KaluoEngine::IndexBuffer>SquareIndexBuffer;
+		KaluoEngine::Ref<KaluoEngine::IndexBuffer>SquareIndexBuffer;
 		SquareIndexBuffer.reset(KaluoEngine::IndexBuffer::Create(SquareIndices, (sizeof(SquareIndices) / sizeof(uint32_t))));
 		m_SquareVA->SetIndexBuffer(SquareIndexBuffer);
 
@@ -237,12 +237,14 @@ public:
 	}
 
 private:
-	std::shared_ptr<KaluoEngine::Shader> m_Shader;
-	std::shared_ptr<KaluoEngine::VertexArray> m_VertexArray;
+
+	//2022-8-30 using own smart pointers now.
+	KaluoEngine::Ref<KaluoEngine::Shader> m_Shader;
+	KaluoEngine::Ref<KaluoEngine::VertexArray> m_VertexArray;
 
 	//sqaure vertex array
-	std::shared_ptr<KaluoEngine::VertexArray> m_SquareVA;
-	std::shared_ptr<KaluoEngine::Shader> m_FlatColorShader;
+	KaluoEngine::Ref<KaluoEngine::VertexArray> m_SquareVA;
+	KaluoEngine::Ref<KaluoEngine::Shader> m_FlatColorShader;
 
 	KaluoEngine::OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition;
