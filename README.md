@@ -43,8 +43,10 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 			- [Transform](#transform)
 			- [Material](#material)
 		- [[2022-8-29] Shader Class Abstraction](#2022-8-29-shader-class-abstraction)
-		- [[2022-8-30] Smart pointer, refs and some encapsulations](#2022-8-30-smart-pointer-refs-and-some-encapsulations)
+		- [[2022-8-30] Smart pointer, refs and some encapsulations. Textures](#2022-8-30-smart-pointer-refs-and-some-encapsulations-textures)
 			- [own type of shared ptr - Engine Ref, Scope](#own-type-of-shared-ptr---engine-ref-scope)
+			- [Textures](#textures)
+			- [OpenGLTexture Class](#opengltexture-class)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -1300,7 +1302,7 @@ virtual void OnImGuiRender() override
 }
 ```
 
-### [2022-8-30] Smart pointer, refs and some encapsulations
+### [2022-8-30] Smart pointer, refs and some encapsulations. Textures
 
 in the future. have context of entire scene, before rendering. because we need sorting, coloring, for improving performance.
 shader objects are held the reference, vertex array as well.
@@ -1320,4 +1322,115 @@ namespace KaluoEngine {
 	template <typename T>
 	using Ref = std::shared_ptr<T>;
 }
-``
+```
+
+#### Textures
+
+Buffer of memories. stored in the VRam
+Normal mapping, lookup textures.
+
+Goal: load image file, and render it inside engine.
+Geometry: what data do we need? Texture Coordinate
+Texture class: load and upload
+
+```c++
+//2022-8-30 add texture coordinate
+float SqaureVertices[5 * 4] = {
+	-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+	0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+	0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+	-0.5f, 0.5f, 0.0f, 0.0f, 1.0f
+}
+```
+
+#### OpenGLTexture Class
+
+it is for sure based on abstract texture class so not shown here
+
+```c++
+class OpenGLTexture2D : public Texture2D
+{
+public:
+	OpenGLTexture2D(const std::string& path);
+	virtual ~OpenGLTexture2D();
+	virtual uint32_t GetWidth() const override { return m_Width; }
+	virtual uint32_t GetHeight() const override { return m_Height; }
+	virtual void Bind(uint32_t slot = 0) const override;
+private:
+	std::string m_Path;
+	uint32_t m_Width;
+	uint32_t m_Height;
+	uint32_t m_RendererID;
+};
+
+OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
+	: m_Path(path)
+{
+	int width, height, channels;
+	//flip the data for opengl
+	stbi_set_flip_vertically_on_load(1);
+	stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+	KALUO_CORE_ASSERT(data, "Failed to load image!");
+	m_Width = width;
+	m_Height = height;
+	//upload buffer into gpu
+	glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
+	glTextureStorage2D(m_RendererID, 1, GL_RGB8, m_Width, m_Height);
+	glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//not using linear filter
+	glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, GL_RGB, GL_UNSIGNED_BYTE, data);
+	//dealloacate from cpu
+	stbi_image_free(data);
+}
+OpenGLTexture2D::~OpenGLTexture2D()
+{
+	glDeleteTextures(1, &m_RendererID);
+}
+void OpenGLTexture2D::Bind(uint32_t slot) const
+{
+	glBindTextureUnit(slot, m_RendererID);
+}
+```
+
+and example of loading a png
+
+```c++
+//2022-8-30 TextureShader
+std::string TextureShadervertexSrc = R"(
+	#version 330 core
+	
+	layout(location = 0) in vec3 a_Position;
+	layout(location = 1) in vec2 a_TextureCoord;
+	uniform mat4 u_ViewProjection;			
+	uniform mat4 u_Transform;
+	out vec2 v_TextureCoord;
+	void main()
+	{
+		v_TextureCoord = a_TextureCoord;
+		gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);	
+	}
+)";
+std::string TextureShaderFragmentSrc = R"(
+	#version 330 core
+	
+	layout(location = 0) out vec4 color;
+	in vec2 v_TextureCoord;
+	uniform sampler2D u_Texture;
+	void main()
+	{
+		//sample a texture
+		color = texture(u_Texture, v_TextureCoord);
+	}
+)";
+m_TextureShader.reset(KaluoEngine::Shader::Create(TextureShadervertexSrc, TextureShaderFragmentSrc));
+
+m_Texture = KaluoEngine::Texture2D::Create("assets/textures/Checkerboard.png");
+std::dynamic_pointer_cast<KaluoEngine::OpenGLShader>(m_TextureShader)->Bind();
+std::dynamic_pointer_cast<KaluoEngine::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
+
+//----- and bind it when Onupdate() ----
+//2022-8-30 big sqaure with texture
+m_Texture->Bind();
+KaluoEngine::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+```

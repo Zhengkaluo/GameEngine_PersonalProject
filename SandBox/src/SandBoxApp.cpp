@@ -43,11 +43,13 @@ public:
 
 		m_SquareVA.reset(KaluoEngine::VertexArray::Create());
 
-		float SqaureVertices[3 * 4] = {
-			-0.5f, -0.5f, 0.0f,
-			0.5f, -0.5f, 0.0f,
-			0.5f, 0.5f, 0.0f,
-			-0.5f, 0.5f, 0.0f
+		//2022-8-30 add texture coordinate
+		//button left->button right->up right->up left
+		float SqaureVertices[5 * 4] = {
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+			0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+			0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+			-0.5f, 0.5f, 0.0f, 0.0f, 1.0f
 		};
 
 		KaluoEngine::Ref<KaluoEngine::VertexBuffer> SquareVB;
@@ -55,6 +57,7 @@ public:
 		KaluoEngine::BufferLayout SquareVBlayout{
 			//takes in buffer elements initializer_list
 			{ KaluoEngine::ShaderDataType::Float3, "a_Position" },
+			{ KaluoEngine::ShaderDataType::Float2, "a_TextureCoord"},
 		};
 		SquareVB->SetLayout(SquareVBlayout);
 		m_SquareVA->AddVertexBuffer(SquareVB);
@@ -131,9 +134,49 @@ public:
 				color =vec4(u_Color, 1.0f);
 			}
 		)";
-		//2022-8-29 change to abstract class creation
+		//2022-8-29 Triangle change to abstract class creation
 		m_FlatColorShader.reset(KaluoEngine::Shader::Create(BlueShadervertexSrc, FlatColorShaderFragmentSrc));
-	}
+		
+		//2022-8-30 TextureShader
+		std::string TextureShadervertexSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) in vec3 a_Position;
+			layout(location = 1) in vec2 a_TextureCoord;
+
+			uniform mat4 u_ViewProjection;			
+			uniform mat4 u_Transform;
+
+			out vec2 v_TextureCoord;
+
+			void main()
+			{
+				v_TextureCoord = a_TextureCoord;
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);	
+			}
+		)";
+
+		std::string TextureShaderFragmentSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) out vec4 color;
+
+			in vec2 v_TextureCoord;
+
+			uniform sampler2D u_Texture;
+
+			void main()
+			{
+				//sample a texture
+				color = texture(u_Texture, v_TextureCoord);
+			}
+		)";
+		m_TextureShader.reset(KaluoEngine::Shader::Create(TextureShadervertexSrc, TextureShaderFragmentSrc));
+		
+		m_Texture = KaluoEngine::Texture2D::Create("assets/textures/Checkerboard.png");
+		std::dynamic_pointer_cast<KaluoEngine::OpenGLShader>(m_TextureShader)->Bind();
+		std::dynamic_pointer_cast<KaluoEngine::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
+}
 
 	void OnUpdate(KaluoEngine::TimeStep timestep) override
 	{
@@ -191,11 +234,16 @@ public:
 			{
 				glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				KaluoEngine::Renderer::Submit(m_FlatColorShader, m_SquareVA, transform);
+				//KaluoEngine::Renderer::Submit(m_FlatColorShader, m_SquareVA, transform);
 			}
 		}
 		
-		KaluoEngine::Renderer::Submit(m_Shader, m_VertexArray);
+		//2022-8-30 big sqaure with texture
+		m_Texture->Bind();
+		KaluoEngine::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+		// Triangle
+		//KaluoEngine::Renderer::Submit(m_Shader, m_VertexArray);
 
 		KaluoEngine::Renderer::EndScene();
 	}
@@ -244,7 +292,10 @@ private:
 
 	//sqaure vertex array
 	KaluoEngine::Ref<KaluoEngine::VertexArray> m_SquareVA;
-	KaluoEngine::Ref<KaluoEngine::Shader> m_FlatColorShader;
+	KaluoEngine::Ref<KaluoEngine::Shader> m_FlatColorShader, m_TextureShader;
+
+	//2022-8-30 texture2D 
+	KaluoEngine::Ref<KaluoEngine::Texture2D> m_Texture;
 
 	KaluoEngine::OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition;

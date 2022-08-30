@@ -19,6 +19,7 @@
 
 #include "KaluoEngine/Renderer/Buffer.h"
 #include "KaluoEngine/Renderer/Shader.h"
+#include "KaluoEngine/Renderer/Texture.h"
 #include "KaluoEngine/Renderer/VertexArray.h"
 
 #include "KaluoEngine/Renderer/OrthographicCamera.h"

@@ -7,6 +7,9 @@
     <Filter Include="src\KaluoEngine">
       <UniqueIdentifier>{0E2579C5-7AB0-E689-83C1-697EEFCB428A}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\KaluoEngine\Core">
+      <UniqueIdentifier>{26A2198C-1231-A355-BB4F-B750A7BDB3FB}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\KaluoEngine\Events">
       <UniqueIdentifier>{32D52CFE-1ECF-5550-073C-EC60F3D4BBBC}</UniqueIdentifier>
     </Filter>
@@ -46,6 +49,9 @@
     <Filter Include="vendor\glm\glm\gtx">
       <UniqueIdentifier>{B3A6A76B-9F8A-68C1-08EB-6214F4ED5243}</UniqueIdentifier>
     </Filter>
+    <Filter Include="vendor\stb_image">
+      <UniqueIdentifier>{0DA0BA59-F998-D9AB-22CB-BE300E23B9B7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\KaluoEngine.h">
@@ -56,6 +62,9 @@
     </ClInclude>
     <ClInclude Include="src\KaluoEngine\Core.h">
       <Filter>src\KaluoEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Core\TimeStep.h">
+      <Filter>src\KaluoEngine\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\KaluoEngine\EntryPoint.h">
       <Filter>src\KaluoEngine</Filter>
@@ -117,6 +126,9 @@
     <ClInclude Include="src\KaluoEngine\Renderer\Shader.h">
       <Filter>src\KaluoEngine\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Renderer\Texture.h">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\KaluoEngine\Renderer\VertexArray.h">
       <Filter>src\KaluoEngine\Renderer</Filter>
     </ClInclude>
@@ -130,6 +142,12 @@
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
@@ -1389,8 +1407,9 @@
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp">
       <Filter>vendor\glm\glm</Filter>
     </ClInclude>
-    <ClInclude Include="src\KaluoEngine\Core\TimeStep.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
+    <ClInclude Include="vendor\stb_image\stb_image.h">
+      <Filter>vendor\stb_image</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\KaluoEngine\Application.cpp">
@@ -1429,6 +1448,9 @@
     <ClCompile Include="src\KaluoEngine\Renderer\Shader.cpp">
       <Filter>src\KaluoEngine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\KaluoEngine\Renderer\Texture.cpp">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\KaluoEngine\Renderer\VertexArray.cpp">
       <Filter>src\KaluoEngine\Renderer</Filter>
     </ClCompile>
@@ -1444,6 +1466,12 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
@@ -1453,6 +1481,8 @@
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
       <Filter>src\Platform\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
+    <ClCompile Include="vendor\stb_image\stb_image.cpp">
+      <Filter>vendor\stb_image</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
