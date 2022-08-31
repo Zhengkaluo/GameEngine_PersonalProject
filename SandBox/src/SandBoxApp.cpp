@@ -174,6 +174,10 @@ public:
 		m_TextureShader.reset(KaluoEngine::Shader::Create(TextureShadervertexSrc, TextureShaderFragmentSrc));
 		
 		m_Texture = KaluoEngine::Texture2D::Create("assets/textures/Checkerboard.png");
+		
+		//2022-8-31 testing alpha channel rendering
+		m_LogoTexture = KaluoEngine::Texture2D::Create("assets/textures/ChernoLogo.png");
+
 		std::dynamic_pointer_cast<KaluoEngine::OpenGLShader>(m_TextureShader)->Bind();
 		std::dynamic_pointer_cast<KaluoEngine::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
 }
@@ -242,6 +246,11 @@ public:
 		m_Texture->Bind();
 		KaluoEngine::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
+		//2022-8-31 adding alpha channel into the rendering 
+		m_LogoTexture->Bind();
+		KaluoEngine::Renderer::Submit(m_TextureShader, m_SquareVA, 
+			glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
 		// Triangle
 		//KaluoEngine::Renderer::Submit(m_Shader, m_VertexArray);
 
@@ -295,7 +304,7 @@ private:
 	KaluoEngine::Ref<KaluoEngine::Shader> m_FlatColorShader, m_TextureShader;
 
 	//2022-8-30 texture2D 
-	KaluoEngine::Ref<KaluoEngine::Texture2D> m_Texture;
+	KaluoEngine::Ref<KaluoEngine::Texture2D> m_Texture, m_LogoTexture;
 
 	KaluoEngine::OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition;

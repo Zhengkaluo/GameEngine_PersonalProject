@@ -33,9 +33,12 @@ namespace KaluoEngine {
 		//set event call back function
 		//event call back go in o windowData--EventCallbackFn
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
-		//2022-8-26 some timesteps check where this 
+		//2022-8-26 timesteps/delta check where this 
 		//sets glfwSwapInterval into 0 and it check if delta time works
 		//m_Window->SetVSync(false);
+
+		//2022-8-31 create our renderer
+		Renderer::Init();
 
 		m_ImGuiLayer = new ImGuiLayer;
 		PushOverlay(m_ImGuiLayer);

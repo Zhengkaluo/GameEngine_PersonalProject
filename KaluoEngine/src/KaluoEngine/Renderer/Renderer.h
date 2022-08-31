@@ -7,6 +7,8 @@ namespace KaluoEngine{
 	class Renderer
 	{
 	public:
+		static void Init();
+
 		static void BeginScene(OrthographicCamera& camera);//taking all scene parameter
 		static void EndScene();
 

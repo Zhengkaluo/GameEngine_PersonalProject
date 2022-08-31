@@ -47,6 +47,8 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 			- [own type of shared ptr - Engine Ref, Scope](#own-type-of-shared-ptr---engine-ref-scope)
 			- [Textures](#textures)
 			- [OpenGLTexture Class](#opengltexture-class)
+		- [adding alpha channel, blending](#adding-alpha-channel-blending)
+			- [blending function into opengl](#blending-function-into-opengl)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -1434,3 +1436,50 @@ std::dynamic_pointer_cast<KaluoEngine::OpenGLShader>(m_TextureShader)->UploadUni
 m_Texture->Bind();
 KaluoEngine::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 ```
+
+### adding alpha channel, blending
+
+there is problem of rendering alpha channel 
+
+```c++
+//we have only GL_RGB8 meaning only rgb channel here
+glTextureStorage2D(m_RendererID, 1, GL_RGB8, m_Width, m_Height);
+```
+
+so this can only handle three channel
+added if check statement to handle this
+
+```c++
+//2022-8-31 channels and decide formats
+GLenum internalFormat = 0, dataFormat = 0;
+if (channels == 4)
+{
+	internalFormat = GL_RGBA8;
+	dataFormat = GL_RGBA;
+}
+else if (channels == 3)
+{
+	internalFormat = GL_RGB8;
+	dataFormat = GL_RGB;
+}
+```
+
+#### blending function into opengl
+
+how opengl treats alpha. Combines color together
+
+<https://zhuanlan.zhihu.com/p/265177867>
+
+```c++
+void OpenGLRendererAPI::Init()
+{
+	/*
+	* Enable Blend in opgngl
+	* Gamma空间下的Alpha混合公式：color = (A.rgb * A.a) + (B.rgb * (1 - A.a))
+	* Linear空间下的Alpha混合公式：color = ((A.rgb ^ 2.2 * A.a) + (B.rgb ^ 2.2 * (1 - A.a))) ^（1 / 2.2)
+	*/ 	
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+```
+and enable this by calling ``` Renderer::Init(); ```

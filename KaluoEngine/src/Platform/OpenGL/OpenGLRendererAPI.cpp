@@ -4,6 +4,16 @@
 #include <glad/glad.h>
 
 namespace KaluoEngine {
+	void OpenGLRendererAPI::Init()
+	{
+		/*
+		* Enable Blend in opgngl
+		* Gamma空间下的Alpha混合公式：color = (A.rgb * A.a) + (B.rgb * (1 - A.a))
+		* Linear空间下的Alpha混合公式：color = ((A.rgb ^ 2.2 * A.a) + (B.rgb ^ 2.2 * (1 - A.a))) ^（1 / 2.2)
+		*/ 	
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
 
 	void OpenGLRendererAPI::SetClearColor(const glm::vec4& color)
 	{
