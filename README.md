@@ -1437,7 +1437,7 @@ m_Texture->Bind();
 KaluoEngine::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 ```
 
-### adding alpha channel, blending
+### [2022-8-31] adding alpha channel, blending
 
 there is problem of rendering alpha channel 
 
