@@ -3,9 +3,10 @@
 #include <string>
 
 #include "KaluoEngine/Renderer/Shader.h"
-
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+typedef unsigned int GLenum;
 
 namespace KaluoEngine {
 	class OpenGLShader : public Shader
@@ -14,6 +15,7 @@ namespace KaluoEngine {
 		//from opengl wiki we know it takes two parameters of a vertex/fragment shader
 		//std::string vertexSource = // Get source code for vertex shader.
 		// std::string fragmentSource = // Get source code for fragment shader.
+		OpenGLShader(const std::string& FilePath);
 		OpenGLShader(const std::string& VertexSource, const std::string& FragmentSource);
 		~OpenGLShader();
 
@@ -30,6 +32,14 @@ namespace KaluoEngine {
 		void UploadUniformMat3(const std::string& name, const glm::mat3& values);
 		void UpLoadUniformMat4(const std::string& name, const glm::mat4& matrix);
 
+	private:
+		//read from glsl file
+		std::string ReadFile(const std::string& filepath);
+		//devide into multiple shader source codes from readfile result
+		//map from shader type to each shader souce codes
+		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
+		void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
+	
 	private:
 		uint32_t m_RendererID;
 

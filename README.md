@@ -47,8 +47,9 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 			- [own type of shared ptr - Engine Ref, Scope](#own-type-of-shared-ptr---engine-ref-scope)
 			- [Textures](#textures)
 			- [OpenGLTexture Class](#opengltexture-class)
-		- [adding alpha channel, blending](#adding-alpha-channel-blending)
+		- [[2022-8-31] adding alpha channel, blending](#2022-8-31-adding-alpha-channel-blending)
 			- [blending function into opengl](#blending-function-into-opengl)
+		- [[2022-9-1] shader asset files](#2022-9-1-shader-asset-files)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -1483,3 +1484,196 @@ void OpenGLRendererAPI::Init()
 }
 ```
 and enable this by calling ``` Renderer::Init(); ```
+
+### [2022-9-1] shader asset files
+
+vertex src string, frag src string. No
+create and compile in files. Yes
+
+goal: get rid of string first 
+
+```c++
+std::string BlueShadervertexSrc = R"(
+	#version 330 core
+	
+	layout(location = 0) in vec3 a_Position;
+	out vec3 v_Position;
+	
+	uniform mat4 u_ViewProjection;			
+	uniform mat4 u_Transform;
+	void main()
+	{
+		v_Position = a_Position;
+		gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);	
+	}
+)";
+```
+
+and instead just calling ``` Shader::Create("assets/shader/Texture.glsl"); ```
+glsl -> OpenGL Shading Language
+
+```c++
+public:
+	OpenGLShader(const std::string& FilePath);
+private:
+	//read from glsl file
+	std::string ReadFile(const std::string& filepath);
+	//devide into multiple shader source codes from readfile result
+	//map from shader type to each shader souce codes
+	std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
+	void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
+
+//implementation
+static GLenum ShaderTypeFromString(const std::string& type)
+{
+	if (type == "vertex")
+		return GL_VERTEX_SHADER;
+	if (type == "fragment" || type == "pixel")
+		return GL_FRAGMENT_SHADER;
+	KALUO_CORE_ASSERT(false, "Unknown shader type!");
+	return 0;
+}
+OpenGLShader::OpenGLShader(const std::string& filepath)
+{
+	std::string source = ReadFile(filepath);
+	auto shaderSources = PreProcess(source);
+	Compile(shaderSources);
+}
+OpenGLShader::OpenGLShader(const std::string& VertexSource, const std::string& FragmentSource)
+{
+	//2022-9-1 moving all compile sources into compile function
+	std::unordered_map<GLenum, std::string> sources;
+	sources[GL_VERTEX_SHADER] = VertexSource;
+	sources[GL_FRAGMENT_SHADER] = FragmentSource;
+	Compile(sources);
+}
+std::string OpenGLShader::ReadFile(const std::string& filepath)
+{
+	std::string result;
+	//at best treat it as a virtual file system
+	std::ifstream in(filepath, std::ios::in, std::ios::binary);
+	if (in)
+	{
+		//file pointer into end of the file
+		in.seekg(0, std::ios::end);
+		//set result to the size of the file
+		result.resize(in.tellg());
+		//set back to the begin of the string
+		in.seekg(0, std::ios::beg);
+		in.read(&result[0], result.size());
+		in.close();
+	}
+	else
+	{
+		KALUO_CORE_ERROR("Could not open file '{0}'", filepath);
+	}
+	return result;
+}
+std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source)
+{
+	std::unordered_map<GLenum, std::string> shaderSources;
+	const char* typeToken = "#type";
+	size_t typeTokenLength = strlen(typeToken);
+	size_t pos = source.find(typeToken, 0);
+	//finding all the type token, and copy all the context
+	while (pos != std::string::npos)
+	{
+		//end of line
+		size_t eol = source.find_first_of("\r\n", pos);
+		KALUO_CORE_ASSERT(eol != std::string::npos, "Syntax Error");
+		//copy the type name
+		size_t begin = pos + typeTokenLength + 1;
+		std::string type = source.substr(begin, eol - begin);
+		KALUO_CORE_ASSERT(ShaderTypeFromString(type), "Invalid shader type specified!");
+		//from here find the next type token
+		size_t nextLinePos = source.find_first_not_of("\r\n", eol);
+		pos = source.find(typeToken, nextLinePos);
+		shaderSources[ShaderTypeFromString(type)] =
+			source.substr(nextLinePos,
+				//untill the end of this datatype or the end of the file
+				pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
+	}
+	return shaderSources;
+}
+void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
+{
+	// Vertex and fragment shaders are successfully compiled.
+	// Now time to link them together into a program.
+	// Get a program object.
+	GLuint program = glCreateProgram();
+	std::vector<GLenum> glShaderIDs(shaderSources.size());
+	// convert the old compile code into a loop
+	for (auto& keyValue : shaderSources)
+	{
+		//shader type
+		GLenum shaderType = keyValue.first;
+		//shader source code
+		const std::string& source = keyValue.second;
+		// Create an empty shader handle, meaning: generate id
+		GLuint Shader = glCreateShader(shaderType);
+		// Send the vertex shader source code to GL
+		// Note that std::string's .c_str is NULL character terminated.
+		const GLchar* sourceCStr = source.c_str();
+		glShaderSource(Shader, 1, &sourceCStr, 0);
+		// Compile the vertex shader
+		glCompileShader(Shader);
+		//check if compile succeed
+		GLint isCompiled = 0;
+		glGetShaderiv(Shader, GL_COMPILE_STATUS, &isCompiled);
+		if (isCompiled == GL_FALSE)
+		{
+			GLint maxLength = 0;
+			glGetShaderiv(Shader, GL_INFO_LOG_LENGTH, &maxLength);
+			// The maxLength includes the NULL character
+			std::vector<GLchar> infoLog(maxLength);
+			glGetShaderInfoLog(Shader, maxLength, &maxLength, &infoLog[0]);
+			// We don't need the shader anymore.
+			glDeleteShader(Shader);
+			// Use the infoLog as you see fit.
+			KALUO_CORE_ERROR("{0}", infoLog.data());
+			KALUO_CORE_ASSERT(false, "shader compiled failed!");
+			// In this simple program, we'll just leave
+			break;
+		}
+		// Attach our shaders to our program
+		glAttachShader(program, Shader);
+		glShaderIDs.push_back(Shader);
+	}
+	
+	m_RendererID = program;
+
+	// Link our program
+	glLinkProgram(program);
+	// Note the different functions here: glGetProgram* instead of glGetShader*.
+	GLint isLinked = 0;
+	glGetProgramiv(program, GL_LINK_STATUS, (int*)&isLinked);
+	if (isLinked == GL_FALSE)
+	{
+		GLint maxLength = 0;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
+		// The maxLength includes the NULL character
+		std::vector<GLchar> infoLog(maxLength);
+		glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
+		// We don't need the program anymore.
+		glDeleteProgram(program);
+		for(auto id : glShaderIDs)
+		{
+			// Don't leak shaders either.
+			glDeleteShader(id);
+		}
+		// Use the infoLog as you see fit.
+		KALUO_CORE_ERROR("{0}", infoLog.data());
+		KALUO_CORE_ASSERT(false, "shader program link failed!");
+		// In this simple program, we'll just leave
+		return;
+	}
+	for (auto id : glShaderIDs)
+	{
+		// Always detach shaders after a successful link.
+		glDetachShader(program, id);
+	}
+	
+	}
+```
+
+compile function do the vertex/fragment shader compile in a loop. so that inside the construction function we just do read file -> preprocess the unordered map -> compile all the elements

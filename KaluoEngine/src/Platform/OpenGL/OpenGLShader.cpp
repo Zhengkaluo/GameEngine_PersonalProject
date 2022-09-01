@@ -1,90 +1,150 @@
 #include "Kaluopch.h"
 #include "OpenGLShader.h"
 
+#include <fstream>
+
 //#include "KaluoEngine/Renderer/Renderer.h"
 
 #include <glad/glad.h>
 
-namespace KaluoEngine{
+namespace KaluoEngine {
+	static GLenum ShaderTypeFromString(const std::string& type)
+	{
+		if (type == "vertex")
+			return GL_VERTEX_SHADER;
+		if (type == "fragment" || type == "pixel")
+			return GL_FRAGMENT_SHADER;
+		KALUO_CORE_ASSERT(false, "Unknown shader type!");
+		return 0;
+	}
 
+	OpenGLShader::OpenGLShader(const std::string& filepath)
+	{
+		std::string source = ReadFile(filepath);
+		auto shaderSources = PreProcess(source);
+		Compile(shaderSources);
+	}
 	OpenGLShader::OpenGLShader(const std::string& VertexSource, const std::string& FragmentSource)
 	{
-		// Create an empty vertex shader handle, meaning: generate id
-		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+		//2022-9-1 moving all compile sources into compile function
+		std::unordered_map<GLenum, std::string> sources;
+		sources[GL_VERTEX_SHADER] = VertexSource;
+		sources[GL_FRAGMENT_SHADER] = FragmentSource;
+		Compile(sources);
+	}
 
-		// Send the vertex shader source code to GL
-		// Note that std::string's .c_str is NULL character terminated.
-		const GLchar* source = VertexSource.c_str();
-		glShaderSource(vertexShader, 1, &source, 0);
+	OpenGLShader::~OpenGLShader()
+	{
+		glDeleteProgram(m_RendererID);
+	}
 
-		// Compile the vertex shader
-		glCompileShader(vertexShader);
-
-		//check if compile succeed
-		GLint isCompiled = 0;
-		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &isCompiled);
-		if (isCompiled == GL_FALSE)
+	std::string OpenGLShader::ReadFile(const std::string& filepath)
+	{
+		std::string result;
+		//at best treat it as a virtual file system
+		std::ifstream in(filepath, std::ios::in, std::ios::binary);
+		if (in)
 		{
-			GLint maxLength = 0;
-			glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &maxLength);
+			//file pointer into end of the file
+			in.seekg(0, std::ios::end);
+			//set result to the size of the file
+			result.resize(in.tellg());
+			//set back to the begin of the string
+			in.seekg(0, std::ios::beg);
+			in.read(&result[0], result.size());
+			in.close();
+		}
+		else
+		{
+			KALUO_CORE_ERROR("Could not open file '{0}'", filepath);
+		}
+		return result;
+	}
 
-			// The maxLength includes the NULL character
-			std::vector<GLchar> infoLog(maxLength);
-			glGetShaderInfoLog(vertexShader, maxLength, &maxLength, &infoLog[0]);
+	std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source)
+	{
+		std::unordered_map<GLenum, std::string> shaderSources;
 
-			// We don't need the shader anymore.
-			glDeleteShader(vertexShader);
+		const char* typeToken = "#type";
+		size_t typeTokenLength = strlen(typeToken);
+		size_t pos = source.find(typeToken, 0);
+		//finding all the type token, and copy all the context
+		while (pos != std::string::npos)
+		{
+			//end of line
+			size_t eol = source.find_first_of("\r\n", pos);
+			KALUO_CORE_ASSERT(eol != std::string::npos, "Syntax Error");
+			//copy the type name
+			size_t begin = pos + typeTokenLength + 1;
+			std::string type = source.substr(begin, eol - begin);
+			KALUO_CORE_ASSERT(ShaderTypeFromString(type), "Invalid shader type specified!");
 
-			// Use the infoLog as you see fit.
-			KALUO_CORE_ERROR("{0}", infoLog.data());
-			KALUO_CORE_ASSERT(false, "Vertex shader compiled failed!");
-			// In this simple program, we'll just leave
-			return;
+			//from here find the next type token
+			size_t nextLinePos = source.find_first_not_of("\r\n", eol);
+			pos = source.find(typeToken, nextLinePos);
+			shaderSources[ShaderTypeFromString(type)] =
+				source.substr(nextLinePos,
+					//untill the end of this datatype or the end of the file
+					pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
 		}
 
-		// Create an empty fragment shader handle
-		GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+		return shaderSources;
+	}
 
-		// Send the fragment shader source code to GL
-		// Note that std::string's .c_str is NULL character terminated.
-		source = (const GLchar*)FragmentSource.c_str();
-		glShaderSource(fragmentShader, 1, &source, 0);
-
-		// Compile the fragment shader
-		glCompileShader(fragmentShader);
-
-		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &isCompiled);
-		if (isCompiled == GL_FALSE)
-		{
-			GLint maxLength = 0;
-			glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &maxLength);
-
-			// The maxLength includes the NULL character
-			std::vector<GLchar> infoLog(maxLength);
-			glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, &infoLog[0]);
-
-			// We don't need the shader anymore.
-			glDeleteShader(fragmentShader);
-			// Either of them. Don't leak shaders.
-			glDeleteShader(vertexShader);
-
-			// Use the infoLog as you see fit.
-			KALUO_CORE_ERROR("{0}", infoLog.data());
-			KALUO_CORE_ASSERT(false, "Fragment shader compiled failed!");
-			// In this simple program, we'll just leave
-			return;
-		}
-
+	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
+	{
 		// Vertex and fragment shaders are successfully compiled.
 		// Now time to link them together into a program.
 		// Get a program object.
-		m_RendererID = glCreateProgram();
-		GLuint program = m_RendererID;
+		GLuint program = glCreateProgram();
+		std::vector<GLenum> glShaderIDs(shaderSources.size());
+		// convert the old compile code into a loop
+		for (auto& keyValue : shaderSources)
+		{
+			//shader type
+			GLenum shaderType = keyValue.first;
+			//shader source code
+			const std::string& source = keyValue.second;
 
-		// Attach our shaders to our program
-		glAttachShader(program, vertexShader);
-		glAttachShader(program, fragmentShader);
+			// Create an empty shader handle, meaning: generate id
+			GLuint Shader = glCreateShader(shaderType);
 
+			// Send the vertex shader source code to GL
+			// Note that std::string's .c_str is NULL character terminated.
+			const GLchar* sourceCStr = source.c_str();
+			glShaderSource(Shader, 1, &sourceCStr, 0);
+
+			// Compile the vertex shader
+			glCompileShader(Shader);
+
+			//check if compile succeed
+			GLint isCompiled = 0;
+			glGetShaderiv(Shader, GL_COMPILE_STATUS, &isCompiled);
+			if (isCompiled == GL_FALSE)
+			{
+				GLint maxLength = 0;
+				glGetShaderiv(Shader, GL_INFO_LOG_LENGTH, &maxLength);
+
+				// The maxLength includes the NULL character
+				std::vector<GLchar> infoLog(maxLength);
+				glGetShaderInfoLog(Shader, maxLength, &maxLength, &infoLog[0]);
+
+				// We don't need the shader anymore.
+				glDeleteShader(Shader);
+
+				// Use the infoLog as you see fit.
+				KALUO_CORE_ERROR("{0}", infoLog.data());
+				KALUO_CORE_ASSERT(false, "shader compiled failed!");
+				// In this simple program, we'll just leave
+				break;
+			}
+			// Attach our shaders to our program
+			glAttachShader(program, Shader);
+			glShaderIDs.push_back(Shader);
+		}
+		
+		m_RendererID = program;
+	
 		// Link our program
 		glLinkProgram(program);
 
@@ -102,25 +162,23 @@ namespace KaluoEngine{
 
 			// We don't need the program anymore.
 			glDeleteProgram(program);
-			// Don't leak shaders either.
-			glDeleteShader(vertexShader);
-			glDeleteShader(fragmentShader);
-
+			for(auto id : glShaderIDs)
+			{
+				// Don't leak shaders either.
+				glDeleteShader(id);
+			}
 			// Use the infoLog as you see fit.
 			KALUO_CORE_ERROR("{0}", infoLog.data());
 			KALUO_CORE_ASSERT(false, "shader program link failed!");
 			// In this simple program, we'll just leave
 			return;
 		}
-
-		// Always detach shaders after a successful link.
-		glDetachShader(program, vertexShader);
-		glDetachShader(program, fragmentShader);
-	}
-
-	OpenGLShader::~OpenGLShader()
-	{
-		glDeleteProgram(m_RendererID);
+		for (auto id : glShaderIDs)
+		{
+			// Always detach shaders after a successful link.
+			glDetachShader(program, id);
+		}
+		
 	}
 
 	void OpenGLShader::Bind() const

@@ -18,6 +18,9 @@ namespace KaluoEngine {
 		//2022-8-29 abstract function for specfic class implementation (later)
 		//virtual void UploadUniformBuffer() = 0;
 
+		//2022-9-1 overload create function
+		static Shader* Create(const std::string& filepath);
+		
 		static Shader* Create(const std::string& VertexSource, const std::string& FragmentSource);
 
 	};

@@ -67,42 +67,44 @@ public:
 		SquareIndexBuffer.reset(KaluoEngine::IndexBuffer::Create(SquareIndices, (sizeof(SquareIndices) / sizeof(uint32_t))));
 		m_SquareVA->SetIndexBuffer(SquareIndexBuffer);
 
-		std::string vertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec4 a_Color;
-	
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
+	//	std::string vertexSrc = R"(
+	//		#version 330 core
+	//		
+	//		layout(location = 0) in vec3 a_Position;
+	//		layout(location = 1) in vec4 a_Color;
+	//
+	//		uniform mat4 u_ViewProjection;
+	//		uniform mat4 u_Transform;
 
-			out vec3 v_Position;
-			out vec4 v_Color;
-			
-			void main()
-			{
-				v_Position = a_Position;
-				v_Color  = a_Color;
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);	
-			}
-		)";
+	//		out vec3 v_Position;
+	//		out vec4 v_Color;
+	//		
+	//		void main()
+	//		{
+	//			v_Position = a_Position;
+	//			v_Color  = a_Color;
+	//			gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);	
+	//		}
+	//	)";
 
-		std::string fragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-			in vec3 v_Position;
-			in vec4 v_Color;
+	//	std::string fragmentSrc = R"(
+	//		#version 330 core
+	//		
+	//		layout(location = 0) out vec4 color;
+	//		in vec3 v_Position;
+	//		in vec4 v_Color;
 
-			void main()
-			{
-				color = vec4(v_Position * 0.5 + 0.5, 1.0);
-				color = v_Color;
+	//		void main()
+	//		{
+	//			color = vec4(v_Position * 0.5 + 0.5, 1.0);
+	//			color = v_Color;
 
-			}
-		)";
-		//2022-8-29 change to abstract class creation
-		m_Shader.reset(KaluoEngine::Shader::Create(vertexSrc, fragmentSrc));
+	//		}
+	//	)";
+	//	//2022-8-29 change to abstract class creation
+	//	m_Shader.reset(KaluoEngine::Shader::Create(vertexSrc, fragmentSrc));
+
+		//Shader::Create("assets/shader/Texture.glsl");
 
 		//source code of shader
 		std::string BlueShadervertexSrc = R"(
@@ -137,44 +139,11 @@ public:
 		//2022-8-29 Triangle change to abstract class creation
 		m_FlatColorShader.reset(KaluoEngine::Shader::Create(BlueShadervertexSrc, FlatColorShaderFragmentSrc));
 		
+		//2022-9-1 moving the texture.glsl to handle shader create
 		//2022-8-30 TextureShader
-		std::string TextureShadervertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec2 a_TextureCoord;
-
-			uniform mat4 u_ViewProjection;			
-			uniform mat4 u_Transform;
-
-			out vec2 v_TextureCoord;
-
-			void main()
-			{
-				v_TextureCoord = a_TextureCoord;
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);	
-			}
-		)";
-
-		std::string TextureShaderFragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec2 v_TextureCoord;
-
-			uniform sampler2D u_Texture;
-
-			void main()
-			{
-				//sample a texture
-				color = texture(u_Texture, v_TextureCoord);
-			}
-		)";
-		m_TextureShader.reset(KaluoEngine::Shader::Create(TextureShadervertexSrc, TextureShaderFragmentSrc));
+		m_TextureShader.reset(KaluoEngine::Shader::Create("assets/shaders/Texture.glsl"));
 		
 		m_Texture = KaluoEngine::Texture2D::Create("assets/textures/Checkerboard.png");
-		
 		//2022-8-31 testing alpha channel rendering
 		m_LogoTexture = KaluoEngine::Texture2D::Create("assets/textures/ChernoLogo.png");
 
@@ -232,13 +201,13 @@ public:
 		std::dynamic_pointer_cast<KaluoEngine::OpenGLShader>(m_FlatColorShader)->UploadUniformFloat3("u_Color", m_SquareColor);
 
 		//render 25 different small sqaure for testing tranform matrix
-		for (int y = 0; y < 5; y++) 
+		for (int y = 0; y < 20; y++) 
 		{
-			for (int x = 0; x < 5; x++)
+			for (int x = 0; x < 20; x++)
 			{
 				glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				//KaluoEngine::Renderer::Submit(m_FlatColorShader, m_SquareVA, transform);
+				KaluoEngine::Renderer::Submit(m_FlatColorShader, m_SquareVA, transform);
 			}
 		}
 		
