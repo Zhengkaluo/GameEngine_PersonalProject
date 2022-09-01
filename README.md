@@ -49,7 +49,8 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 			- [OpenGLTexture Class](#opengltexture-class)
 		- [[2022-8-31] adding alpha channel, blending](#2022-8-31-adding-alpha-channel-blending)
 			- [blending function into opengl](#blending-function-into-opengl)
-		- [[2022-9-1] shader asset files](#2022-9-1-shader-asset-files)
+		- [[2022-9-1] shader asset files, learn some blending](#2022-9-1-shader-asset-files-learn-some-blending)
+			- [Some Blending learn](#some-blending-learn)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -1485,7 +1486,7 @@ void OpenGLRendererAPI::Init()
 ```
 and enable this by calling ``` Renderer::Init(); ```
 
-### [2022-9-1] shader asset files
+### [2022-9-1] shader asset files, learn some blending
 
 vertex src string, frag src string. No
 create and compile in files. Yes
@@ -1677,3 +1678,21 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shader
 ```
 
 compile function do the vertex/fragment shader compile in a loop. so that inside the construction function we just do read file -> preprocess the unordered map -> compile all the elements
+
+#### Some Blending learn
+
+3 ways of control in opengl:
+1. glENable(GL_BLEND) 
+2. glBlendFunc(src, dest). 
+   src = how src RGBA factors is computed (default GL_ONE); dest = how dest RGBA factors is computed (default GL_ZERO)
+3. glBlendEquation(mode)
+   mode = how we combine the src and dest colors, default: GL_FUNC_ADD
+so in there the default: 1 + 0 = 1. meaning use only source value
+
+However in here
+- [blending function into opengl](#blending-function-into-opengl)
+we have src = GL_SRC_ALPHA. dest = GL_ONE_MINUS_SRC_ALPHA. so if the pixel rendering from texutre is transparent: meaning alpha = 0, then dest = 1 - 0 = 1 (take the inverse of the source alpha) so this mean "use the destination color"
+R = (Rsrc * 0) + (Rdest * (1 - 0)) = Rdest
+G = (Gsrc * 0) + (Gdest * (1 - 0)) = Gdest
+B = (Bsrc * 0) + (Bdest * (1 - 0)) = Bdest
+A = (Asrc * 0) + (Adest * (1 - 0)) = Adest
