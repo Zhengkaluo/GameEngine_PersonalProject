@@ -9,7 +9,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-
 class ExampleLayer : public KaluoEngine::Layer
 {
 public:
@@ -67,42 +66,42 @@ public:
 		SquareIndexBuffer.reset(KaluoEngine::IndexBuffer::Create(SquareIndices, (sizeof(SquareIndices) / sizeof(uint32_t))));
 		m_SquareVA->SetIndexBuffer(SquareIndexBuffer);
 
-	//	std::string vertexSrc = R"(
-	//		#version 330 core
-	//		
-	//		layout(location = 0) in vec3 a_Position;
-	//		layout(location = 1) in vec4 a_Color;
-	//
-	//		uniform mat4 u_ViewProjection;
-	//		uniform mat4 u_Transform;
+		std::string vertexSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) in vec3 a_Position;
+			layout(location = 1) in vec4 a_Color;
+	
+			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
 
-	//		out vec3 v_Position;
-	//		out vec4 v_Color;
-	//		
-	//		void main()
-	//		{
-	//			v_Position = a_Position;
-	//			v_Color  = a_Color;
-	//			gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);	
-	//		}
-	//	)";
+			out vec3 v_Position;
+			out vec4 v_Color;
+			
+			void main()
+			{
+				v_Position = a_Position;
+				v_Color  = a_Color;
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);	
+			}
+		)";
 
-	//	std::string fragmentSrc = R"(
-	//		#version 330 core
-	//		
-	//		layout(location = 0) out vec4 color;
-	//		in vec3 v_Position;
-	//		in vec4 v_Color;
+		std::string fragmentSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) out vec4 color;
+			in vec3 v_Position;
+			in vec4 v_Color;
 
-	//		void main()
-	//		{
-	//			color = vec4(v_Position * 0.5 + 0.5, 1.0);
-	//			color = v_Color;
+			void main()
+			{
+				color = vec4(v_Position * 0.5 + 0.5, 1.0);
+				color = v_Color;
 
-	//		}
-	//	)";
-	//	//2022-8-29 change to abstract class creation
-	//	m_Shader.reset(KaluoEngine::Shader::Create(vertexSrc, fragmentSrc));
+			}
+		)";
+		//2022-8-29 change to abstract class creation
+		m_Shader = (KaluoEngine::Shader::Create("VertexPos Color shader", vertexSrc, fragmentSrc));
 
 		//Shader::Create("assets/shader/Texture.glsl");
 
@@ -137,11 +136,12 @@ public:
 			}
 		)";
 		//2022-8-29 Triangle change to abstract class creation
-		m_FlatColorShader.reset(KaluoEngine::Shader::Create(BlueShadervertexSrc, FlatColorShaderFragmentSrc));
+		m_FlatColorShader = KaluoEngine::Shader::Create("Flat color shader", BlueShadervertexSrc, FlatColorShaderFragmentSrc);
 		
-		//2022-9-1 moving the texture.glsl to handle shader create
 		//2022-8-30 TextureShader
-		m_TextureShader.reset(KaluoEngine::Shader::Create("assets/shaders/Texture.glsl"));
+		//2022-9-1 moving the texture.glsl to handle shader create
+		//2022-9-2 using shaderlirary to store and handle all shader create and load
+		auto m_TextureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 		
 		m_Texture = KaluoEngine::Texture2D::Create("assets/textures/Checkerboard.png");
 		//2022-8-31 testing alpha channel rendering
@@ -210,7 +210,9 @@ public:
 				KaluoEngine::Renderer::Submit(m_FlatColorShader, m_SquareVA, transform);
 			}
 		}
-		
+		//2022-9-2 Using ShaderLIbrary to handle shader loading (meaning no more loacl varaibles)
+		auto m_TextureShader = m_ShaderLibrary.Get("Texture");
+
 		//2022-8-30 big sqaure with texture
 		m_Texture->Bind();
 		KaluoEngine::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
@@ -263,6 +265,8 @@ public:
 	}
 
 private:
+	//2022-9-2 holding shader library
+	KaluoEngine::ShaderLibrary m_ShaderLibrary;
 
 	//2022-8-30 using own smart pointers now.
 	KaluoEngine::Ref<KaluoEngine::Shader> m_Shader;
@@ -270,7 +274,7 @@ private:
 
 	//sqaure vertex array
 	KaluoEngine::Ref<KaluoEngine::VertexArray> m_SquareVA;
-	KaluoEngine::Ref<KaluoEngine::Shader> m_FlatColorShader, m_TextureShader;
+	KaluoEngine::Ref<KaluoEngine::Shader> m_FlatColorShader;
 
 	//2022-8-30 texture2D 
 	KaluoEngine::Ref<KaluoEngine::Texture2D> m_Texture, m_LogoTexture;

@@ -16,14 +16,15 @@ namespace KaluoEngine {
 		//std::string vertexSource = // Get source code for vertex shader.
 		// std::string fragmentSource = // Get source code for fragment shader.
 		OpenGLShader(const std::string& FilePath);
-		OpenGLShader(const std::string& VertexSource, const std::string& FragmentSource);
+		OpenGLShader(const std::string& name, const std::string& VertexSource, const std::string& FragmentSource);
 		~OpenGLShader();
 
 		virtual void Bind() const override;
 		virtual void UnBind() const override;
 
-		void UploadUniformInt(const std::string& name, int value);
+		virtual const std::string& GetName() const override { return m_Name;  }
 
+		void UploadUniformInt(const std::string& name, int value);
 		void UploadUniformFloat(const std::string& name, float values);
 		void UploadUniformFloat2(const std::string& name, const glm::vec2& values);
 		void UploadUniformFloat3(const std::string& name, const glm::vec3& values);
@@ -43,5 +44,6 @@ namespace KaluoEngine {
 	private:
 		uint32_t m_RendererID;
 
+		std::string m_Name;
 	};
 }

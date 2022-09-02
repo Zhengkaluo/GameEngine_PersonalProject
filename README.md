@@ -51,6 +51,8 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 			- [blending function into opengl](#blending-function-into-opengl)
 		- [[2022-9-1] shader asset files, learn some blending](#2022-9-1-shader-asset-files-learn-some-blending)
 			- [Some Blending learn](#some-blending-learn)
+		- [[2022/9/2] Shader Library](#202292-shader-library)
+			- [ShaderLibrary Class](#shaderlibrary-class)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -1696,3 +1698,99 @@ R = (Rsrc * 0) + (Rdest * (1 - 0)) = Rdest
 G = (Gsrc * 0) + (Gdest * (1 - 0)) = Gdest
 B = (Bsrc * 0) + (Bdest * (1 - 0)) = Bdest
 A = (Asrc * 0) + (Adest * (1 - 0)) = Adest
+
+### [2022/9/2] Shader Library
+
+small minor change in the openglshader class
+change glshaderids from vectors to array
+so that the memory goes through to stack allocation instead of heap
+and we dont have to worry about the delete becasue it is part of compile function
+
+#### ShaderLibrary Class
+
+the name of the shader is extracted from the file path automatically
+and use the name to find and stroe the shader in the library
+
+goal:
+
+```c++
+//2022-9-2 using shaderlirary to store and handle all shader create and load
+//the name of the shader is extracted from the file path automatically
+auto m_TextureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
+
+//---Upper: store shader by shaderlibrary-----Lower:Get shader by lirbrary
+
+//2022-9-2 Using ShaderLIbrary to handle shader loading (meaning no more loacl varaibles)
+auto m_TextureShader = m_ShaderLibrary.Get("Texture");
+```
+
+and the structure of the class:
+
+```c++
+class ShaderLibrary
+{
+public:
+	//the const refference. because it only get copied when we go in to unordered_map
+	void Add(const Ref<Shader>& shader);
+	void Add(const std::string& name, const Ref<Shader>& shader);
+	Ref<Shader> Load(const std::string& filePath); // assets/texture.glsl
+	Ref<Shader> Load(const std::string& name, const std::string& filePath);
+	Ref<Shader> Get(const std::string& name);
+	bool Exists(const std::string& name) const;
+private:
+	std::unordered_map<std::string, Ref<Shader>> m_Shaders;
+};
+
+//implementation
+void ShaderLibrary::Add(const std::string& name, const Ref<Shader>& shader)
+{
+	//auto& name = shader->GetName();
+	KALUO_CORE_ASSERT(!Exists(name), "shaders already exist!");
+	m_Shaders[name] = shader;
+}
+void ShaderLibrary::Add(const Ref<Shader>& shader)
+{
+	auto& name = shader->GetName();
+	KALUO_CORE_ASSERT(!Exists(name), "shaders already exist!");
+	Add(name, shader);
+}
+Ref<Shader> ShaderLibrary::Load(const std::string& filePath)
+{
+	//create -> add to m_shaders -> return
+	auto shader = Shader::Create(filePath);
+	Add(shader);
+	return shader;
+}
+Ref<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filePath)
+{
+	//create -> add to m_shaders -> return
+	auto shader = Shader::Create(filePath);
+	Add(name, shader);
+	return shader;
+}
+Ref<Shader> ShaderLibrary::Get(const std::string& name)
+{
+	//
+	KALUO_CORE_ASSERT(m_Shaders.find(name) != m_Shaders.end(), "shaders not found!");
+	
+	return m_Shaders[name];
+}
+bool ShaderLibrary::Exists(const std::string& name) const
+{
+	return m_Shaders.find(name) != m_Shaders.end();
+}
+```
+
+the way shader class extract the name of file
+
+```c++
+//2022-9-2 extract name of file and give it to shader class
+// Example: assets/shaders/Texture.glsl
+// so we are using the string after last slash and use it as name
+auto LastSlash = filepath.find_last_of("/\\");
+LastSlash = LastSlash == std::string::npos ? 0 : LastSlash + 1;
+auto LastDot = filepath.rfind('.');
+//determine the index if no last dot found
+auto Count = LastDot == std::string::npos ? filepath.size() - LastSlash : LastDot -LastSlash;
+m_Name = filepath.substr(LastSlash, Count);
+```

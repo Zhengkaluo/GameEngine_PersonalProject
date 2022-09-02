@@ -23,8 +23,19 @@ namespace KaluoEngine {
 		std::string source = ReadFile(filepath);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
+
+		//2022-9-2 extract name of file and give it to shader class
+		// assets/shaders/Texture.glsl
+		// so we are using the string after last slash and use it as name
+		auto LastSlash = filepath.find_last_of("/\\");
+		LastSlash = LastSlash == std::string::npos ? 0 : LastSlash + 1;
+		auto LastDot = filepath.rfind('.');
+		//determine the index if no last dot found
+		auto Count = LastDot == std::string::npos ? filepath.size() - LastSlash : LastDot - LastSlash;
+		m_Name = filepath.substr(LastSlash, Count);
 	}
-	OpenGLShader::OpenGLShader(const std::string& VertexSource, const std::string& FragmentSource)
+	OpenGLShader::OpenGLShader(const std::string& name, const std::string& VertexSource, const std::string& FragmentSource)
+		: m_Name(name)
 	{
 		//2022-9-1 moving all compile sources into compile function
 		std::unordered_map<GLenum, std::string> sources;
@@ -42,7 +53,7 @@ namespace KaluoEngine {
 	{
 		std::string result;
 		//at best treat it as a virtual file system
-		std::ifstream in(filepath, std::ios::in, std::ios::binary);
+		std::ifstream in(filepath, std::ios::in | std::ios::binary);
 		if (in)
 		{
 			//file pointer into end of the file
@@ -97,7 +108,11 @@ namespace KaluoEngine {
 		// Now time to link them together into a program.
 		// Get a program object.
 		GLuint program = glCreateProgram();
-		std::vector<GLenum> glShaderIDs(shaderSources.size());
+		//2022-9-2 change glshaderid from vectors to arrays. From stack instead of heap
+		KALUO_CORE_ASSERT(shaderSources.size() <= 2, "for now only support no more than 2 size in shadersources");
+		std::array<GLenum, 2> glShaderIDs;
+		//glShaderIDs.reserve(shaderSources.size());
+		int glShaderIDIndex = 0;
 		// convert the old compile code into a loop
 		for (auto& keyValue : shaderSources)
 		{
@@ -140,7 +155,9 @@ namespace KaluoEngine {
 			}
 			// Attach our shaders to our program
 			glAttachShader(program, Shader);
-			glShaderIDs.push_back(Shader);
+
+			//increase the index after the loop
+			glShaderIDs[glShaderIDIndex++] = Shader;
 		}
 		
 		m_RendererID = program;
