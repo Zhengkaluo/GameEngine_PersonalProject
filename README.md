@@ -53,6 +53,7 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 			- [Some Blending learn](#some-blending-learn)
 		- [[2022/9/2] Shader Library](#202292-shader-library)
 			- [ShaderLibrary Class](#shaderlibrary-class)
+		- [[2022/9/4] 2D renderer planing](#202294-2d-renderer-planing)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -1794,3 +1795,30 @@ auto LastDot = filepath.rfind('.');
 auto Count = LastDot == std::string::npos ? filepath.size() - LastSlash : LastDot -LastSlash;
 m_Name = filepath.substr(LastSlash, Count);
 ```
+
+### [2022/9/4] 2D renderer planing
+
+differences bettwen our renderer and 2D renderer
+2D does not nesscesary need shader submit, vertex array submit, view projection matrix.
+2D does not worry about different shaders.
+
+if we handle all inside a renderer class api, it is easy to cause confusion
+
+```c++
+KaluoEngine::Renderer::BeginScene(m_Camera);
+KaluoEngine::Renderer::BeginScene2D(m_Camera)
+KaluoEngine::Renderer::DrawQuad(m_Scene); // draw in 2d?
+KaluoEngine::Renderer::DrawRecTangle(m_Scene); // or 3D?
+```
+
+so goal: ``` KaluoEngine::Renderer2D::BeginScene(m_Scene2D); ```
+in beginscene handling with specific camera
+drawthings(parameters), position, size, color/texture...
+
+what could be a thing: a lot of 2D quads on the screen at one time, batching handling all quads. if draw-call each quads once, the framerate will be terrible. what we actaully do is batch all quads into one geometry. vertex buffers form into big vertex buffers.
+
+so we want to have a batch renderer. Texture atlas system, 
+
+For animate sprite (animation): use delta into nearest key frame and play next frame.
+
+For UI: layout system. for each resolution still in correct position. 
