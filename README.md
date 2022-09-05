@@ -54,6 +54,8 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 		- [[2022/9/2] Shader Library](#202292-shader-library)
 			- [ShaderLibrary Class](#shaderlibrary-class)
 		- [[2022/9/4] 2D renderer planing](#202294-2d-renderer-planing)
+		- [2022-9-5 camera controller](#2022-9-5-camera-controller)
+			- [details of camera controller (orthographic)](#details-of-camera-controller-orthographic)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -1822,3 +1824,91 @@ so we want to have a batch renderer. Texture atlas system,
 For animate sprite (animation): use delta into nearest key frame and play next frame.
 
 For UI: layout system. for each resolution still in correct position. 
+
+### 2022-9-5 camera controller
+
+wrapper of camera class
+
+controller is not near to renderer but to the user interaction. and it malnipulates these paroperties in the camera class
+
+```c++
+private:
+glm::mat4 m_ProjectionMatrix;
+glm::mat4 m_ViewMatrix;
+glm::mat4 m_ViewProjectionMatrix;
+```
+#### details of camera controller (orthographic)
+
+it binds onupdate, onevent and calculates the zoom level and aspectratio depends on the values
+
+```c++
+class OrthographicCameraController
+{
+public:
+	// aspectratio * 2 units
+	// zoom level of 1.0f
+	OrthographicCameraController(float aspectRatio, bool rotation = false); 
+
+	void SetPosition(float left, float right, float bottom, float top);
+	void OnEvent(Event& e);
+	void OnUpdate(TimeStep DeltaTime);
+	OrthographicCamera& GetCamera() { return m_Camera; }
+	const OrthographicCamera& GetCamera() const{ return m_Camera; }
+private:
+	bool OnMouseScrolled(MouseScrolledEvent& e);
+	bool OnWindowResized(WindowResizeEvent& e);
+}
+
+OrthographicCameraController::OrthographicCameraController(float apspectRatio, bool rotation)
+	: m_AspectRatio(apspectRatio), m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel), m_Rotation(rotation)
+{
+}
+void OrthographicCameraController::OnUpdate(TimeStep Deltatime)
+{
+	//2022-8-24 using polling system to move the camera
+	if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_A))
+		m_CameraPosition.x -= m_CameraTranslationSpeed * Deltatime;
+	else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_D))
+		m_CameraPosition.x += m_CameraTranslationSpeed * Deltatime;
+	if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_W))
+		m_CameraPosition.y += m_CameraTranslationSpeed * Deltatime;
+	else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_S))
+		m_CameraPosition.y -= m_CameraTranslationSpeed * Deltatime;
+	if (m_Rotation)
+	{
+		if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_Q))
+			m_CameraRotation += m_CameraRotateSpeed * Deltatime;
+		else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_E))
+			m_CameraRotation -= m_CameraRotateSpeed * Deltatime;
+		m_Camera.SetRotation(m_CameraRotation);
+	}
+	
+	m_Camera.SetPosition(m_CameraPosition);
+	
+	//the higher zoom level is the slower the move speed
+	m_CameraTranslationSpeed = m_ZoomLevel;
+}
+void OrthographicCameraController::OnEvent(Event& e)
+{
+	EventDispatcher dispatcher(e);
+	dispatcher.Dispatch<MouseScrolledEvent>(KALUO_BIND_EVENT_FN(OrthographicCameraController::OnMouseScrolled));
+	dispatcher.Dispatch<WindowResizeEvent>(KALUO_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));
+}
+bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e)
+{
+ 	m_ZoomLevel -= e.GetYOffset() * 0.2f;
+	
+	m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
+	//reset the view projection matrix and m_ProjectionMatrix
+	m_Camera.SetPosition(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+	return false;
+}
+
+bool OrthographicCameraController::OnWindowResized(WindowResizeEvent& e)
+{
+	m_AspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
+	//reset the view projection matrix and m_ProjectionMatrix
+	m_Camera.SetPosition(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+	return false;
+}
+```

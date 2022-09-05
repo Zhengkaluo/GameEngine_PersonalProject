@@ -156,12 +156,14 @@
     <ClInclude Include="src\KaluoEngine\LayerStack.h" />
     <ClInclude Include="src\KaluoEngine\Log.h" />
     <ClInclude Include="src\KaluoEngine\MouseButtonCodes.h" />
+    <ClInclude Include="src\KaluoEngine\OrthographicCameraController.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\Buffer.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\Camara.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\OrthographicCamera.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\RenderCommand.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\Renderer.h" />
+    <ClInclude Include="src\KaluoEngine\Renderer\Renderer2D.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\RendererAPI.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\Shader.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\Texture.h" />
@@ -600,10 +602,12 @@
     <ClCompile Include="src\KaluoEngine\Layer.cpp" />
     <ClCompile Include="src\KaluoEngine\LayerStack.cpp" />
     <ClCompile Include="src\KaluoEngine\Log.cpp" />
+    <ClCompile Include="src\KaluoEngine\OrthographicCameraController.cpp" />
     <ClCompile Include="src\KaluoEngine\Renderer\Buffer.cpp" />
     <ClCompile Include="src\KaluoEngine\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\KaluoEngine\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\KaluoEngine\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\KaluoEngine\Renderer\Renderer2D.cpp" />
     <ClCompile Include="src\KaluoEngine\Renderer\RendererAPI.cpp" />
     <ClCompile Include="src\KaluoEngine\Renderer\Shader.cpp" />
     <ClCompile Include="src\KaluoEngine\Renderer\Texture.cpp" />

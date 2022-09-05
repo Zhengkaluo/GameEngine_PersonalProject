@@ -8,6 +8,8 @@
 #include "KaluoEngine/MouseButtonCodes.h"
 #include "KaluoEngine/KeyCodes.h"
 
+#include "KaluoEngine/OrthographicCameraController.h"
+
 #include "KaluoEngine/ImGui/ImGuiLayer.h"
 
 #include "KaluoEngine/Core/TimeStep.h"

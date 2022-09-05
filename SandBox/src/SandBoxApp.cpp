@@ -13,7 +13,7 @@ class ExampleLayer : public KaluoEngine::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Example Layer"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f, 0.0f, 0.0f), m_CameraRotation(0.f)
+		: Layer("Example Layer"), m_CameraController(1280.0f / 720.f)
 	{
 		//Steps: Vertex Array + Vertex Buffer + Index Buffer
 		//Shader, use default shader
@@ -153,34 +153,26 @@ public:
 
 	void OnUpdate(KaluoEngine::TimeStep timestep) override
 	{
-		//2022-8-26 getting timesteps which calculated in application run function
-		//KALUO_TRACE("DeltaTIme {0}, {1}ms", timestep.GetSeconds(), timestep.GetMillseconds());
 		//operator casting time step into a float
-		float DeltaTime = timestep;
-
-		//2022-8-24 using polling system to move the camera
-		if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_LEFT))
-			m_CameraPosition.x -= m_CameraMoveSpeed * DeltaTime;
-		else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_RIGHT))
-			m_CameraPosition.x += m_CameraMoveSpeed * DeltaTime;
-
-		if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_UP))
-			m_CameraPosition.y += m_CameraMoveSpeed * DeltaTime;
-		else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_DOWN))
-			m_CameraPosition.y -= m_CameraMoveSpeed * DeltaTime;
+		//KALUO_TRACE("DeltaTIme {0}, {1}ms", timestep.GetSeconds(), timestep.GetMillseconds());
 		
-		if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_A))
-			m_CameraRotation += m_CameraRotateSpeed * DeltaTime;
-		else if (KaluoEngine::Input::IsKeyPressed(KALUO_KEY_D))
-			m_CameraRotation -= m_CameraRotateSpeed * DeltaTime;
+		//2022-8-24 using polling system to move the camera
+		//2022-9-5 all camera stuffs move into camera controller
+		m_CameraController.OnUpdate(timestep);
 
+		//render stuffs
 		KaluoEngine::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		KaluoEngine::RenderCommand::Clear();
 
-		m_Camera.SetPosition(m_CameraPosition);
-		m_Camera.SetRotation(m_CameraRotation);
+		//2022-9-5 move all camera handling into camera controller class
+		/*m_Camera.SetPosition(m_CameraPosition);
+		m_Camera.SetRotation(m_CameraRotation);*/
 
-		KaluoEngine::Renderer::BeginScene(m_Camera);
+		KaluoEngine::Renderer::BeginScene(m_CameraController.GetCamera());
+		//2022-9-4 2Drenderer class planning
+		//KaluoEngine::Renderer2D::BeginScene2D(m_Camera);
+		//KaluoEngine::Renderer2D::DrawCircle(...);
+
 
 		//2022-8-28 create a transfom matrix based on vec3 squareposition 
 		//glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_SqaurePosition);
@@ -255,6 +247,8 @@ public:
 
 		KaluoEngine::EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<KaluoEngine::KeyPressedEvent>(KALUO_BIND_EVENT_FN(ExampleLayer::OnKeyPressedEvent));
+		
+		m_CameraController.OnEvent(event);
 	}
 
 	bool OnKeyPressedEvent(KaluoEngine::KeyPressedEvent& event) 
@@ -279,13 +273,10 @@ private:
 	//2022-8-30 texture2D 
 	KaluoEngine::Ref<KaluoEngine::Texture2D> m_Texture, m_LogoTexture;
 
-	KaluoEngine::OrthographicCamera m_Camera;
+	KaluoEngine::OrthographicCameraController m_CameraController;
+
 	glm::vec3 m_CameraPosition;
 	float m_CameraRotation;
-
-	//in a second moved 1.3f unit and 180 degree
-	float m_CameraMoveSpeed = 1.3f;
-	float m_CameraRotateSpeed = 180.0f;
 
 	glm::vec3 m_SquareColor = { 0.2f, 0.3f, 0.8f };
 };

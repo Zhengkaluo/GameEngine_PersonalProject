@@ -8,7 +8,9 @@ namespace KaluoEngine {
 	public:
 		//for creating matrix
 		OrthographicCamera(float left, float right, float bottom, float top);
-	
+		
+		void SetPosition(float left, float right, float bottom, float top);
+
 		//btw when creating get function, lets keep it as const function for now
 		const glm::vec3& GetPosition() const { return m_Position; }
 		void SetPosition(const glm::vec3& position) { m_Position = position; RecalculateViewMatrix(); }
