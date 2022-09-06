@@ -1,14 +1,14 @@
 #pragma once
 //for application 
-#include "KaluoEngine/Application.h"
-#include "KaluoEngine/Log.h"
-#include "KaluoEngine/Layer.h"
+#include "KaluoEngine/Core/Application.h"
+#include "KaluoEngine/Core/Log.h"
+#include "KaluoEngine/Core/Layer.h"
 
-#include "KaluoEngine/Input.h"
-#include "KaluoEngine/MouseButtonCodes.h"
-#include "KaluoEngine/KeyCodes.h"
+#include "KaluoEngine/Core/Input.h"
+#include "KaluoEngine/Core/MouseButtonCodes.h"
+#include "KaluoEngine/Core/KeyCodes.h"
 
-#include "KaluoEngine/OrthographicCameraController.h"
+#include "KaluoEngine/Renderer/OrthographicCameraController.h"
 
 #include "KaluoEngine/ImGui/ImGuiLayer.h"
 
@@ -29,6 +29,6 @@
 
 //---Entry point------
 
-#include "KaluoEngine/EntryPoint.h"
+#include "KaluoEngine/Core/EntryPoint.h"
 
 //------

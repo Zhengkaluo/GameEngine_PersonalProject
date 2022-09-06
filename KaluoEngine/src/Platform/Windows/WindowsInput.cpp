@@ -2,7 +2,7 @@
 #include "WindowsInput.h"
 
 #include <GLFW/glfw3.h>
-#include "KaluoEngine/Application.h"
+#include "KaluoEngine/Core/Application.h"
 
 namespace KaluoEngine {
 

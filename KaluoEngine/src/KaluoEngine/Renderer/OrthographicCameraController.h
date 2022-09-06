@@ -1,7 +1,7 @@
 #pragma once
 
 #include "KaluoEngine/Core/TimeStep.h"
-#include "Renderer/OrthographicCamera.h"
+#include "KaluoEngine/Renderer/OrthographicCamera.h"
 
 #include "KaluoEngine/Events/ApplicationEvent.h"
 #include "KaluoEngine/Events/MouseEvent.h"

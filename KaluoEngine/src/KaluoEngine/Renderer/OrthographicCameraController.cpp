@@ -1,8 +1,8 @@
 #include "Kaluopch.h"
 #include "OrthographicCameraController.h"
 
-#include "KaluoEngine/Input.h"
-#include "KaluoEngine/KeyCodes.h"
+#include "KaluoEngine/Core/Input.h"
+#include "KaluoEngine/Core/KeyCodes.h"
 
 namespace KaluoEngine {
 	OrthographicCameraController::OrthographicCameraController(float apspectRatio, bool rotation)

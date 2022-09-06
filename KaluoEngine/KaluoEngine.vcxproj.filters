@@ -57,17 +57,38 @@
     <ClInclude Include="src\KaluoEngine.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\KaluoEngine\Application.h">
-      <Filter>src\KaluoEngine</Filter>
+    <ClInclude Include="src\KaluoEngine\Core\Application.h">
+      <Filter>src\KaluoEngine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\KaluoEngine\Core.h">
-      <Filter>src\KaluoEngine</Filter>
+    <ClInclude Include="src\KaluoEngine\Core\Core.h">
+      <Filter>src\KaluoEngine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Core\EntryPoint.h">
+      <Filter>src\KaluoEngine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Core\Input.h">
+      <Filter>src\KaluoEngine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Core\KeyCodes.h">
+      <Filter>src\KaluoEngine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Core\Layer.h">
+      <Filter>src\KaluoEngine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Core\LayerStack.h">
+      <Filter>src\KaluoEngine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Core\Log.h">
+      <Filter>src\KaluoEngine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Core\MouseButtonCodes.h">
+      <Filter>src\KaluoEngine\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\KaluoEngine\Core\TimeStep.h">
       <Filter>src\KaluoEngine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\KaluoEngine\EntryPoint.h">
-      <Filter>src\KaluoEngine</Filter>
+    <ClInclude Include="src\KaluoEngine\Core\Window.h">
+      <Filter>src\KaluoEngine\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\KaluoEngine\Events\ApplicationEvent.h">
       <Filter>src\KaluoEngine\Events</Filter>
@@ -84,24 +105,6 @@
     <ClInclude Include="src\KaluoEngine\ImGui\ImGuiLayer.h">
       <Filter>src\KaluoEngine\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="src\KaluoEngine\Input.h">
-      <Filter>src\KaluoEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\KaluoEngine\KeyCodes.h">
-      <Filter>src\KaluoEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\KaluoEngine\Layer.h">
-      <Filter>src\KaluoEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\KaluoEngine\LayerStack.h">
-      <Filter>src\KaluoEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\KaluoEngine\Log.h">
-      <Filter>src\KaluoEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\KaluoEngine\MouseButtonCodes.h">
-      <Filter>src\KaluoEngine</Filter>
-    </ClInclude>
     <ClInclude Include="src\KaluoEngine\Renderer\Buffer.h">
       <Filter>src\KaluoEngine\Renderer</Filter>
     </ClInclude>
@@ -114,10 +117,16 @@
     <ClInclude Include="src\KaluoEngine\Renderer\OrthographicCamera.h">
       <Filter>src\KaluoEngine\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Renderer\OrthographicCameraController.h">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\KaluoEngine\Renderer\RenderCommand.h">
       <Filter>src\KaluoEngine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\KaluoEngine\Renderer\Renderer.h">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KaluoEngine\Renderer\Renderer2D.h">
       <Filter>src\KaluoEngine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\KaluoEngine\Renderer\RendererAPI.h">
@@ -158,9 +167,6 @@
     </ClInclude>
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
       <Filter>src\Platform\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Window.h">
-      <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="vendor\glm\glm\common.hpp">
       <Filter>vendor\glm\glm</Filter>
@@ -1410,12 +1416,19 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\KaluoEngine\Renderer\Renderer2D.h" />
-    <ClInclude Include="src\KaluoEngine\OrthographicCameraController.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\KaluoEngine\Application.cpp">
-      <Filter>src\KaluoEngine</Filter>
+    <ClCompile Include="src\KaluoEngine\Core\Application.cpp">
+      <Filter>src\KaluoEngine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KaluoEngine\Core\Layer.cpp">
+      <Filter>src\KaluoEngine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KaluoEngine\Core\LayerStack.cpp">
+      <Filter>src\KaluoEngine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KaluoEngine\Core\Log.cpp">
+      <Filter>src\KaluoEngine\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\KaluoEngine\ImGui\ImGuiBuild.cpp">
       <Filter>src\KaluoEngine\ImGui</Filter>
@@ -1423,25 +1436,22 @@
     <ClCompile Include="src\KaluoEngine\ImGui\ImGuiLayer.cpp">
       <Filter>src\KaluoEngine\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\KaluoEngine\Layer.cpp">
-      <Filter>src\KaluoEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\KaluoEngine\LayerStack.cpp">
-      <Filter>src\KaluoEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\KaluoEngine\Log.cpp">
-      <Filter>src\KaluoEngine</Filter>
-    </ClCompile>
     <ClCompile Include="src\KaluoEngine\Renderer\Buffer.cpp">
       <Filter>src\KaluoEngine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\KaluoEngine\Renderer\OrthographicCamera.cpp">
       <Filter>src\KaluoEngine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\KaluoEngine\Renderer\OrthographicCameraController.cpp">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\KaluoEngine\Renderer\RenderCommand.cpp">
       <Filter>src\KaluoEngine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\KaluoEngine\Renderer\Renderer.cpp">
+      <Filter>src\KaluoEngine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KaluoEngine\Renderer\Renderer2D.cpp">
       <Filter>src\KaluoEngine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\KaluoEngine\Renderer\RendererAPI.cpp">
@@ -1486,7 +1496,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\KaluoEngine\Renderer\Renderer2D.cpp" />
-    <ClCompile Include="src\KaluoEngine\OrthographicCameraController.cpp" />
   </ItemGroup>
 </Project>

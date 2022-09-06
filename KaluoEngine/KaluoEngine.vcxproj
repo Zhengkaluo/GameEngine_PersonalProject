@@ -141,26 +141,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\KaluoEngine.h" />
-    <ClInclude Include="src\KaluoEngine\Application.h" />
-    <ClInclude Include="src\KaluoEngine\Core.h" />
+    <ClInclude Include="src\KaluoEngine\Core\Application.h" />
+    <ClInclude Include="src\KaluoEngine\Core\Core.h" />
+    <ClInclude Include="src\KaluoEngine\Core\EntryPoint.h" />
+    <ClInclude Include="src\KaluoEngine\Core\Input.h" />
+    <ClInclude Include="src\KaluoEngine\Core\KeyCodes.h" />
+    <ClInclude Include="src\KaluoEngine\Core\Layer.h" />
+    <ClInclude Include="src\KaluoEngine\Core\LayerStack.h" />
+    <ClInclude Include="src\KaluoEngine\Core\Log.h" />
+    <ClInclude Include="src\KaluoEngine\Core\MouseButtonCodes.h" />
     <ClInclude Include="src\KaluoEngine\Core\TimeStep.h" />
-    <ClInclude Include="src\KaluoEngine\EntryPoint.h" />
+    <ClInclude Include="src\KaluoEngine\Core\Window.h" />
     <ClInclude Include="src\KaluoEngine\Events\ApplicationEvent.h" />
     <ClInclude Include="src\KaluoEngine\Events\Event.h" />
     <ClInclude Include="src\KaluoEngine\Events\KeyEvent.h" />
     <ClInclude Include="src\KaluoEngine\Events\MouseEvent.h" />
     <ClInclude Include="src\KaluoEngine\ImGui\ImGuiLayer.h" />
-    <ClInclude Include="src\KaluoEngine\Input.h" />
-    <ClInclude Include="src\KaluoEngine\KeyCodes.h" />
-    <ClInclude Include="src\KaluoEngine\Layer.h" />
-    <ClInclude Include="src\KaluoEngine\LayerStack.h" />
-    <ClInclude Include="src\KaluoEngine\Log.h" />
-    <ClInclude Include="src\KaluoEngine\MouseButtonCodes.h" />
-    <ClInclude Include="src\KaluoEngine\OrthographicCameraController.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\Buffer.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\Camara.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\OrthographicCamera.h" />
+    <ClInclude Include="src\KaluoEngine\Renderer\OrthographicCameraController.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\RenderCommand.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\Renderer.h" />
     <ClInclude Include="src\KaluoEngine\Renderer\Renderer2D.h" />
@@ -177,7 +178,6 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
-    <ClInclude Include="src\Window.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_fixes.hpp" />
@@ -596,15 +596,15 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\KaluoEngine\Application.cpp" />
+    <ClCompile Include="src\KaluoEngine\Core\Application.cpp" />
+    <ClCompile Include="src\KaluoEngine\Core\Layer.cpp" />
+    <ClCompile Include="src\KaluoEngine\Core\LayerStack.cpp" />
+    <ClCompile Include="src\KaluoEngine\Core\Log.cpp" />
     <ClCompile Include="src\KaluoEngine\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\KaluoEngine\ImGui\ImGuiLayer.cpp" />
-    <ClCompile Include="src\KaluoEngine\Layer.cpp" />
-    <ClCompile Include="src\KaluoEngine\LayerStack.cpp" />
-    <ClCompile Include="src\KaluoEngine\Log.cpp" />
-    <ClCompile Include="src\KaluoEngine\OrthographicCameraController.cpp" />
     <ClCompile Include="src\KaluoEngine\Renderer\Buffer.cpp" />
     <ClCompile Include="src\KaluoEngine\Renderer\OrthographicCamera.cpp" />
+    <ClCompile Include="src\KaluoEngine\Renderer\OrthographicCameraController.cpp" />
     <ClCompile Include="src\KaluoEngine\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\KaluoEngine\Renderer\Renderer.cpp" />
     <ClCompile Include="src\KaluoEngine\Renderer\Renderer2D.cpp" />

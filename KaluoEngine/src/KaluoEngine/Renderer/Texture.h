@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "KaluoEngine/Core.h"
+#include "KaluoEngine/Core/Core.h"
 
 namespace KaluoEngine {
 	

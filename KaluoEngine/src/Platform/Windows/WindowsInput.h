@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "KaluoEngine/Input.h"
+#include "KaluoEngine/Core/Input.h"
 
 namespace KaluoEngine {
 

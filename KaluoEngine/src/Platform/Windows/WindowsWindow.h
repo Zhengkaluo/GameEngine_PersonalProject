@@ -1,5 +1,5 @@
 #pragma once
-#include "Window.h"
+#include "KaluoEngine/Core/Window.h"
 #include "KaluoEngine/Renderer/GraphicsContext.h"
 
 #include <GLFW/glfw3.h>

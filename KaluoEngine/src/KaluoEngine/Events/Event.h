@@ -1,6 +1,6 @@
 #pragma once
 #include "Kaluopch.h"
-#include "KaluoEngine/Core.h"
+#include "KaluoEngine/Core/Core.h"
 
 
 namespace KaluoEngine {

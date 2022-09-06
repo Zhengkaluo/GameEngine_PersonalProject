@@ -56,6 +56,7 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 		- [[2022/9/4] 2D renderer planing](#202294-2d-renderer-planing)
 		- [2022-9-5 camera controller](#2022-9-5-camera-controller)
 			- [details of camera controller (orthographic)](#details-of-camera-controller-orthographic)
+		- [Some Organizing and Maintenance](#some-organizing-and-maintenance)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -1912,3 +1913,8 @@ bool OrthographicCameraController::OnWindowResized(WindowResizeEvent& e)
 	return false;
 }
 ```
+
+### Some Organizing and Maintenance 
+
+supporting different platforms, rename the batch file moved to scrips folder.
+For now only generate project batfile, later will be build and more file.
