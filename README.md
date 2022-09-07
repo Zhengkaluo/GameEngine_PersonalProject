@@ -2136,7 +2136,7 @@ void OnUpdate(KaluoEngine::TimeStep timestep) override
 
 When having this error :
 
-![image](https://github.com/Zhengkaluo/GameEngine_PersonalProject/blob/main/IMG/Trciky Errors.png)
+![image](https://github.com/Zhengkaluo/GameEngine_PersonalProject/blob/main/IMG/Trciky%20Errors.png)
 
 when we go to kaluoengine header, it contains entry point and entry point contains a main function
 ```
