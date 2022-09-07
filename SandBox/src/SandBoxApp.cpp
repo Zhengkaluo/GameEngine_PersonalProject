@@ -1,6 +1,7 @@
 
 //#include "../KaluoEngine/KaluoEngine.h"
 #include <KaluoEngine.h>
+#include <KaluoEngine/Core/EntryPoint.h>
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
@@ -8,6 +9,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "SandBox2D.h"
 
 class ExampleLayer : public KaluoEngine::Layer
 {
@@ -17,7 +20,7 @@ public:
 	{
 		//Steps: Vertex Array + Vertex Buffer + Index Buffer
 		//Shader, use default shader
-		m_VertexArray.reset(KaluoEngine::VertexArray::Create());
+		m_VertexArray = KaluoEngine::VertexArray::Create();
 
 		float vertices[3 * 7] = {
 			-0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
@@ -40,7 +43,7 @@ public:
 		m_IndexBuffer.reset(KaluoEngine::IndexBuffer::Create(indices, (sizeof(indices) / sizeof(uint32_t))));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
-		m_SquareVA.reset(KaluoEngine::VertexArray::Create());
+		m_SquareVA = (KaluoEngine::VertexArray::Create());
 
 		//2022-8-30 add texture coordinate
 		//button left->button right->up right->up left
@@ -155,10 +158,6 @@ public:
 	{
 		//operator casting time step into a float
 		//KALUO_TRACE("DeltaTIme {0}, {1}ms", timestep.GetSeconds(), timestep.GetMillseconds());
-		
-		//2022-8-24 using polling system to move the camera
-		//2022-9-5 all camera stuffs move into camera controller
-		m_CameraController.OnUpdate(timestep);
 
 		//render stuffs
 		KaluoEngine::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
@@ -287,8 +286,11 @@ public:
 	Sandbox()
 	{
 		//std::("constructing sandbox...");
-		PushLayer(new ExampleLayer());
 		//PushOverlay(new KaluoEngine::ImGuiLayer());
+
+		//2022-9-7 using snadbox2d class (old example layer) to handle 2d rendering
+		//PushLayer(new ExampleLayer());
+		PushLayer(new SandBox2D());
 	}
 
 	~Sandbox()

@@ -27,8 +27,3 @@
 #include "KaluoEngine/Renderer/OrthographicCamera.h"
 //--------
 
-//---Entry point------
-
-#include "KaluoEngine/Core/EntryPoint.h"
-
-//------

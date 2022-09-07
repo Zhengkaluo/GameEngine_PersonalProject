@@ -5,7 +5,7 @@
 #include "RendererAPI.h"
 #include "Platform/OpenGL/OpenGLVertexArray.h"
 namespace KaluoEngine{ 
-	VertexArray* VertexArray::Create() {
+	Ref<VertexArray> VertexArray::Create() {
 		//decide which api we are using
 		//which class type we instantiate
 		switch (Renderer::GetAPI())
@@ -14,7 +14,7 @@ namespace KaluoEngine{
 			KALUO_CORE_ASSERT(false, "None RenderAPi is not supported!");
 			return nullptr;
 		case RendererAPI::API::OpenGL:
-			return new OpenGLVertexArray();
+			return std::make_shared<OpenGLVertexArray>();
 
 		}
 		KALUO_CORE_ASSERT(false, "UnKnown Renderer API!");
