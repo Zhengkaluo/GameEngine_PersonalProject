@@ -17,6 +17,7 @@
 
 //-----REnderer-----
 #include "KaluoEngine/Renderer/Renderer.h"
+#include "KaluoEngine/Renderer/Renderer2D.h"
 #include "KaluoEngine/Renderer/RenderCommand.h"
 
 #include "KaluoEngine/Renderer/Buffer.h"

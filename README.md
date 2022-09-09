@@ -59,6 +59,7 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 		- [[2022-9-6] Some Organizing and Maintenance](#2022-9-6-some-organizing-and-maintenance)
 		- [[2022-9-7] SandBox 2D rendering](#2022-9-7-sandbox-2d-rendering)
 			- [moving sandbox example layers stuffs into sandbox 2d layer](#moving-sandbox-example-layers-stuffs-into-sandbox-2d-layer)
+		- [[2022-9-9] starting 2d rendering.](#2022-9-9-starting-2d-rendering)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -2138,7 +2139,7 @@ When having this error :
 
 ![image](https://github.com/Zhengkaluo/GameEngine_PersonalProject/blob/main/IMG/Trciky%20Errors.png)
 
-when we go to kaluoengine header, it contains entry point and entry point contains a main function
+when we go to kaluoengine header, it contains entry point and entry point contains a main function, so we do not include entiry point at our engine file
 ```
 //---Entry point------
 
@@ -2156,20 +2157,56 @@ extern KaluoEngine::Application* KaluoEngine::CreateApplication();
 
 int main(int argc, char** argv)
 {
-	KaluoEngine::Log::Init();
-	KALUO_CORE_WARN("Enigne Log Initialized!");
-	//KaluoEngine::Log::GetCoreLogger()->warn("Initialized Engine Log!");
-	int a = 5;
-	KALUO_INFO("Client Log Initialized! Test Var = {0}", a);
-	//KaluoEngine::Log::GetClientLogger()->info("Initialized Client Log!");
-
-	//create application by calling application's create application and it defined by the client
-	printf("Kaluo Engine constructing...\n");
-	auto App = KaluoEngine::CreateApplication();
-	App->Run();
-	delete App;
+.....
 }
-
 #endif
+```
 
+### [2022-9-9] starting 2d rendering. 
+
+some plans: profiling and memory tracking. custom memoory allocation
+
+rendering in general should be static and we dont want multiple renderer2D at once.
+
+for now negative z value go towards the camera and positive is away of camera
+
+inside the renderer2d class we would like to customize the storage of 2d data
+
+```c++
+struct Renderer2DStorage
+{
+	Ref<VertexArray> QuadVertexArray;
+	Ref<Shader> FlatColorShader;
+};
+```
+
+in init function() it has testing data
+
+```c++
+void Renderer2D::Init()
+{
+	s_Data = new Renderer2DStorage();
+	//using 2d storage to store the vertex array
+	s_Data->QuadVertexArray = (VertexArray::Create());
+	//2022-9-9 these datas are all for testing this api
+	float SqaureVertices[3 * 4] = {
+		-0.5f, -0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f,
+		0.5f, 0.5f, 0.0f,
+		-0.5f, 0.5f, 0.0f
+	};
+	Ref<VertexBuffer> SquareVB;
+	SquareVB.reset(VertexBuffer::Create(SqaureVertices, sizeof(SqaureVertices)));
+	BufferLayout SquareVBlayout{
+		//takes in buffer elements initializer_list
+		{ ShaderDataType::Float3, "a_Position" }
+	};
+	SquareVB->SetLayout(SquareVBlayout);
+	s_Data->QuadVertexArray->AddVertexBuffer(SquareVB);
+	unsigned int SquareIndices[6] = { 0, 1, 2, 2, 3, 0 };
+	Ref<IndexBuffer>SquareIndexBuffer;
+	SquareIndexBuffer.reset(IndexBuffer::Create(SquareIndices, (sizeof(SquareIndices) / sizeof(uint32_t))));
+	s_Data->QuadVertexArray->SetIndexBuffer(SquareIndexBuffer);
+	s_Data->FlatColorShader = Shader::Create("assets/shaders/FlatColor.glsl");
+}
 ```

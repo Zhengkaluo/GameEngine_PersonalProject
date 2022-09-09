@@ -1,6 +1,7 @@
 #include "Kaluopch.h"
 #include "Renderer.h"
 #include "RenderCommand.h"
+#include "Renderer2D.h"
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
@@ -11,6 +12,8 @@ namespace KaluoEngine {
 	void Renderer::Init()
 	{
 		RenderCommand::Init();
+		//2022-9-9 add also 2D renderer init
+		Renderer2D::Init();
 	}
 
 	void Renderer::BeginScene(OrthographicCamera& camera)
