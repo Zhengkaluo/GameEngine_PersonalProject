@@ -60,6 +60,8 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 		- [[2022-9-7] SandBox 2D rendering](#2022-9-7-sandbox-2d-rendering)
 			- [moving sandbox example layers stuffs into sandbox 2d layer](#moving-sandbox-example-layers-stuffs-into-sandbox-2d-layer)
 		- [[2022-9-9] starting 2d rendering.](#2022-9-9-starting-2d-rendering)
+		- [[2022-9-10] Setting 2D renderer Transform](#2022-9-10-setting-2d-renderer-transform)
+			- [setting transfom](#setting-transfom)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -2180,7 +2182,7 @@ struct Renderer2DStorage
 };
 ```
 
-in init function() it has testing data
+in Init function() it has testing data
 
 ```c++
 void Renderer2D::Init()
@@ -2208,5 +2210,28 @@ void Renderer2D::Init()
 	SquareIndexBuffer.reset(IndexBuffer::Create(SquareIndices, (sizeof(SquareIndices) / sizeof(uint32_t))));
 	s_Data->QuadVertexArray->SetIndexBuffer(SquareIndexBuffer);
 	s_Data->FlatColorShader = Shader::Create("assets/shaders/FlatColor.glsl");
+}
+```
+
+### [2022-9-10] Setting 2D renderer Transform
+
+Setting Individual uniform transfom matrix
+
+Set vs Upload. different. Set is depends on numbers of factors whereas upload matrix in here is purely opengl concept
+
+#### setting transfom
+
+Position = viewprojectionmatrix * transofm * position
+transfom handle as translation and scale
+
+```c++
+void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
+{
+//...
+//2022-9-10 handling transform matrix as position and scale
+glm::mat4 transfom = glm::translate(glm::mat4(1.0f), position) * /* rotation can be added here*/
+	glm::scale(glm::mat4(1.0f), {size.x, size.y, 1.0f});
+(s_Data->FlatColorShader)->SetMat4("u_Transform", transfom);
+//...
 }
 ```
