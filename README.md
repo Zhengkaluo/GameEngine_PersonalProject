@@ -62,6 +62,7 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 		- [[2022-9-9] starting 2d rendering.](#2022-9-9-starting-2d-rendering)
 		- [[2022-9-10] Setting 2D renderer Transform](#2022-9-10-setting-2d-renderer-transform)
 			- [setting transfom](#setting-transfom)
+		- [[2022-9-10] Setting 2D renderer Transform](#2022-9-10-setting-2d-renderer-transform-1)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -2170,7 +2171,7 @@ some plans: profiling and memory tracking. custom memoory allocation
 
 rendering in general should be static and we dont want multiple renderer2D at once.
 
-for now negative z value go towards the camera and positive is away of camera
+for now positive z value go towards the camera and negative is away of camera
 
 inside the renderer2d class we would like to customize the storage of 2d data
 
@@ -2234,4 +2235,25 @@ glm::mat4 transfom = glm::translate(glm::mat4(1.0f), position) * /* rotation can
 (s_Data->FlatColorShader)->SetMat4("u_Transform", transfom);
 //...
 }
+```
+
+### [2022-9-10] Setting 2D renderer Transform
+
+easy work today 
+
+```c++
+void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture)
+	{
+		(s_Data->TextureShader)->Bind();
+		
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		s_Data->TextureShader->SetMat4("u_Transform", transform);
+
+		//instead of setting color, we set texture
+		texture->Bind();
+
+		s_Data->QuadVertexArray->Bind();
+
+		RenderCommand::DrawIndexed(s_Data->QuadVertexArray);
+	}
 ```

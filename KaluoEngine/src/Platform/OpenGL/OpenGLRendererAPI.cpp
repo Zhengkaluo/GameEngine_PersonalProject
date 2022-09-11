@@ -13,6 +13,9 @@ namespace KaluoEngine {
 		*/ 	
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		//2022-9-11 enable depth testing
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	void OpenGLRendererAPI::SetClearColor(const glm::vec4& color)

@@ -36,7 +36,7 @@ void SandBox2D::OnAttach()
 	//m_SquareVA->SetIndexBuffer(SquareIndexBuffer);
 
 	//m_FlatColorShader = KaluoEngine::Shader::Create("assets/shaders/FlatColor.glsl");
-
+	m_CheckerBoardTexture = KaluoEngine::Texture2D::Create("assets/textures/Checkerboard.png");
 }
 void SandBox2D::OnDetach() 
 {
@@ -57,6 +57,8 @@ void SandBox2D::OnUpdate(KaluoEngine::TimeStep timestep)
 	KaluoEngine::Renderer2D::BeginScene(m_CameraController.GetCamera());
 	KaluoEngine::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
 	KaluoEngine::Renderer2D::DrawQuad({ 0.5f, 0.0f }, { 0.5f, 0.15f }, { 0.2f, 0.3f, 0.8f, 1.0f });
+
+	KaluoEngine::Renderer2D::DrawQuad({ 1.f, 0.0f, -0.1f }, { 1.5f, 1.5f }, m_CheckerBoardTexture);
 
 	KaluoEngine::Renderer2D::EndScene();
 
