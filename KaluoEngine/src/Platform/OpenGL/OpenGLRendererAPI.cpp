@@ -36,6 +36,8 @@ namespace KaluoEngine {
 	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray)
 	{
 		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+		//UnBind after using
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 

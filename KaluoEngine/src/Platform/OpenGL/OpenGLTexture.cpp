@@ -5,6 +5,28 @@
 
 namespace KaluoEngine {
 
+	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
+		: m_Width(width), m_Height(height)
+	{
+		//GLenum internalFormat = GL_RGBA8, dataFormat = GL_RGBA;
+
+		m_InternalFormat = GL_RGBA8;
+		m_DataFormat = GL_RGBA;
+
+		//upload buffer into gpu
+		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
+		glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
+
+		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		//not using linear filter
+		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	}
+
+
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
 		: m_Path(path)
 	{
@@ -31,6 +53,9 @@ namespace KaluoEngine {
 			dataFormat = GL_RGB;
 		}
 
+		m_InternalFormat = internalFormat;
+		m_DataFormat - dataFormat;
+
 		KALUO_CORE_ASSERT(internalFormat & dataFormat, "loaded picture channels Format not supported!");
 
 		//upload buffer into gpu
@@ -48,6 +73,15 @@ namespace KaluoEngine {
 
 		//dealloacate from cpu
 		stbi_image_free(data);
+	}
+
+	//set entire texutre (pure color)
+	void OpenGLTexture2D::SetData(void* data, uint32_t size)
+	{
+		//either 4 or 3 depends on the dataformat
+		uint32_t BytePerChannel = m_DataFormat == GL_RGBA ? 4 : 3;
+		KALUO_CORE_ASSERT(size == m_Width * m_Height * BytePerChannel, "Data must be entire texture!");
+		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 	}
 
 	OpenGLTexture2D::~OpenGLTexture2D()

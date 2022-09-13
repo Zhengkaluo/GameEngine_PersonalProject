@@ -63,6 +63,7 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 		- [[2022-9-10] Setting 2D renderer Transform](#2022-9-10-setting-2d-renderer-transform)
 			- [setting transfom](#setting-transfom)
 		- [[2022-9-10] Setting 2D renderer Transform](#2022-9-10-setting-2d-renderer-transform-1)
+		- [[2022-9-13] single shader 2d renderer](#2022-9-13-single-shader-2d-renderer)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -2256,4 +2257,39 @@ void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, cons
 
 		RenderCommand::DrawIndexed(s_Data->QuadVertexArray);
 	}
+```
+
+### [2022-9-13] single shader 2d renderer
+
+set a default texture bound.
+extend texture api for creating texture from code (meaning craeting a entire texture by one vec4)
+
+m_DataFormat and m_internalFormat are made global instead of local like before
+
+```c++
+//constructor of a simple entire colro texture
+OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
+	: m_Width(width), m_Height(height)
+{
+	//GLenum internalFormat = GL_RGBA8, dataFormat = GL_RGBA;
+	m_InternalFormat = GL_RGBA8;
+	m_DataFormat = GL_RGBA;
+	//upload buffer into gpu
+	glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
+	glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
+	glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//not using linear filter
+	glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+}
+
+//set entire texutre (pure color)
+void OpenGLTexture2D::SetData(void* data, uint32_t size)
+{
+	//either 4 or 3 depends on the dataformat
+	uint32_t BytePerChannel = m_DataFormat == GL_RGBA ? 4 : 3;
+	KALUO_CORE_ASSERT(size == m_Width * m_Height * BytePerChannel, "Data must be entire texture!");
+	glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
+}
 ```

@@ -6,6 +6,20 @@
 
 namespace KaluoEngine {
 
+	Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height)
+	{
+		switch (Renderer::GetAPI())
+		{
+		case RendererAPI::API::None:
+			KALUO_CORE_ASSERT(false, "RendererAPI None is not supported!");
+		case RendererAPI::API::OpenGL:
+			return std::make_shared<OpenGLTexture2D>(width, height);
+		}
+
+		KALUO_CORE_ASSERT(false, "RendererAPI None is not supported!");
+		return nullptr;
+	}
+
 	Ref<Texture2D> Texture2D::Create(const std::string& path)
 	{
 		switch (Renderer::GetAPI())
