@@ -62,8 +62,10 @@ Learning from the famous Hazel Engine  <https://github.com/TheCherno/Hazel>
 		- [[2022-9-9] starting 2d rendering.](#2022-9-9-starting-2d-rendering)
 		- [[2022-9-10] Setting 2D renderer Transform](#2022-9-10-setting-2d-renderer-transform)
 			- [setting transfom](#setting-transfom)
-		- [[2022-9-10] Setting 2D renderer Transform](#2022-9-10-setting-2d-renderer-transform-1)
+		- [[2022-9-10] Setting 2D renderer texture](#2022-9-10-setting-2d-renderer-texture)
 		- [[2022-9-13] single shader 2d renderer](#2022-9-13-single-shader-2d-renderer)
+		- [[2022-9-15] Starting of profiling](#2022-9-15-starting-of-profiling)
+			- [timer class](#timer-class)
 
 ### [2022/8/1-2-3] (some small things)
 
@@ -2238,25 +2240,24 @@ glm::mat4 transfom = glm::translate(glm::mat4(1.0f), position) * /* rotation can
 }
 ```
 
-### [2022-9-10] Setting 2D renderer Transform
+### [2022-9-10] Setting 2D renderer texture
 
 easy work today 
 
 ```c++
 void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture)
-	{
-		(s_Data->TextureShader)->Bind();
-		
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-		s_Data->TextureShader->SetMat4("u_Transform", transform);
-
-		//instead of setting color, we set texture
-		texture->Bind();
-
-		s_Data->QuadVertexArray->Bind();
-
-		RenderCommand::DrawIndexed(s_Data->QuadVertexArray);
-	}
+{
+	(s_Data->TextureShader)->SetFloat4("u_Color", glm::vec4(1.0f));
+	(s_Data->TextureShader)->Bind();
+	
+	//instead of setting color, we set texture
+	texture->Bind();
+	glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+	s_Data->TextureShader->SetMat4("u_Transform", transform);
+	s_Data->QuadVertexArray->Bind();
+	RenderCommand::DrawIndexed(s_Data->QuadVertexArray);
+	//texture->UnBind();
+}
 ```
 
 ### [2022-9-13] single shader 2d renderer
@@ -2291,5 +2292,95 @@ void OpenGLTexture2D::SetData(void* data, uint32_t size)
 	uint32_t BytePerChannel = m_DataFormat == GL_RGBA ? 4 : 3;
 	KALUO_CORE_ASSERT(size == m_Width * m_Height * BytePerChannel, "Data must be entire texture!");
 	glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
+}
+```
+
+### [2022-9-15] Starting of profiling
+
+drag some numbers out and later visualized them
+
+#### timer class
+
+>> __LINE__ __LINE__ is a preprocessor macro that expands to current line number in the source file, as an integer. __LINE__ is useful when generating log statements, error messages intended for programmers, when throwing exceptions, or when writing debugging code
+
+```c++
+//type of lambda
+template<typename Fn>
+class Timer
+{
+public:
+	//using const char* as static string instead of string type
+	Timer(const char* name, Fn&& func)
+		: m_Name(name), m_Stopped(false), m_Func(func)
+	{
+		m_StartTimePoint = std::chrono::high_resolution_clock::now();
+	}
+
+	~Timer()
+	{
+		if (!m_Stopped)
+			Stop();
+	}
+
+	void Stop()
+	{
+		auto EndTimePoint = std::chrono::high_resolution_clock::now();
+
+		long long start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimePoint).time_since_epoch().count();
+		long long end = std::chrono::time_point_cast<std::chrono::microseconds>(EndTimePoint).time_since_epoch().count();
+
+		m_Stopped = true;
+
+		float duration = (end - start) * 0.001f;
+		
+		//call back the lamda function, in here is pushing back the result to the profile result
+		m_Func({ m_Name, duration });
+	}
+
+private:
+	const char* m_Name;
+	std::chrono::time_point<std::chrono::steady_clock> m_StartTimePoint;
+	bool m_Stopped;
+
+	Fn m_Func;
+};
+
+#define PROFILE_SCOPE(name) Timer timer##__LINE__(name, [&](ProfileResult profileResult) { m_ProfileResults.push_back(profileResult); })
+```
+
+how to visualized the data:
+```c++
+void SandBox2D::OnImGuiRender()
+{
+	ImGui::Begin("Kaluo Engine Info:");
+	ImGui::Text("Hello World");
+	for (auto& result : m_ProfileResults)
+	{
+		char label[50];
+		strcpy(label, "  %.3fms ");
+		strcat(label, result.Name);
+		ImGui::Text(label, result.Time);
+	}
+	m_ProfileResults.clear();
+
+	ImGui::End();
+}
+```
+
+example of using
+
+```c++
+//2022-9-15 profiling using timer
+PROFILE_SCOPE("SandBox2D::OnUpdate");
+//2022-9-5 all camera stuffs move into camera controller
+{
+	PROFILE_SCOPE("CameraController.Onupdate");
+	m_CameraController.OnUpdate(timestep);
+}
+{
+	PROFILE_SCOPE("Render Preparation");
+	//render stuffs
+	KaluoEngine::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+	KaluoEngine::RenderCommand::Clear();
 }
 ```
